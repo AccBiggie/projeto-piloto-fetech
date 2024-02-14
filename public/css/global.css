@@ -1,0 +1,217 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.navbar {
+    position: relative;
+    display: flex;
+    margin-bottom: -0.5rem;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: 700;
+    font-family: 'Source Code Pro', monospace;
+}
+
+a {
+    color: var(--primary);
+}
+
+a:hover {
+    color: var(--secondary);
+}
+
+.descricaoSlider, .descricaoMeioSlider {
+    font-family: 'Source Code Pro', monospace;
+    margin-bottom: 40px;
+    color: var(--light);
+}
+
+.img-fluid {
+    max-width: 70%;
+    height: auto;
+}
+
+.imagemMeio {
+    width: auto;
+    height: 375px;
+    margin-top: 25px;
+}
+
+.descricaoNot {
+    width: 100%;
+    height: 85%;
+}
+
+.tituloMeio {
+    text-transform: uppercase;
+    text-align: center;
+    margin-top: 45px;
+    font-family: 'Source Code Pro', monospace;
+}
+
+.subtituloNotebook {
+    color: var(--corpapel);
+    font-weight: 100;
+    margin-top: 35px;
+    font-family: 'Source Code Pro', monospace;
+
+}
+
+.descricaofetech {
+    font-family: 'Source Code Pro', monospace;
+    text-align: justify;
+}
+
+
+.botaoentraremcontato {
+    font-weight: 450;
+    padding-left: 1.4rem;
+    padding-right: 1rem !important;
+    border-radius: 20px;
+    margin-bottom: 40px;
+    float: right;
+}
+
+.logoHeadMeio {
+    height: 10%;
+    width: 12%;
+    z-index: 1000;
+    align-self: end;
+
+}
+
+.subtituloServicos {
+    font-family: 'Source Code Pro', monospace;
+}
+
+.tituloDepoimento {
+    padding: 30px;
+}
+
+.botaosaibamais {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    border-radius: 20px;
+}
+
+.botaocontato {
+    background-color: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    border-radius: 20px;
+}
+
+.button-primay:hover {
+    background-color: var(--secondary);
+    border-color: var(--secondary);
+}
+
+
+.button-primay-outline:hover {
+    background-color: var(--secondary);
+    border-color: var(--secondary);
+}
+
+
+/* .button2 {
+    align-self: center;
+    max-width: 100px;
+    font-size: 14px;
+    padding: 1px;
+    position: relative;
+    margin: 0px 4px 0px;
+    margin-top: 170px;
+    right: 6.9rem !important;
+    align-items: center;
+}*/
+
+.botaoEnviar{
+    background-color: transparent;
+    margin-left: 0.4rem;
+    color: #fff;
+}
+
+.botaoEnviar:hover {
+    background-color: var(--light);
+    color: black;
+}
+
+
+.login {
+    text-decoration: none;
+}
+
+.Fetech {
+    color: black;
+    display: flex;
+    left: 50px;
+}
+
+.whatsapp-link {
+    position: fixed;
+    width: 40px;
+    height: 40px;
+    bottom: 30px;
+    right: 30px;
+    background-color: #25d366;
+    color: #fff;
+    border-radius: 50px;
+    text-align: center;
+    font-size: 27px;
+    box-shadow: 1px 1px 2px #888;
+    z-index: 1000;
+}
+
+/*.setaCima {
+    position: fixed;
+    width: 24px;
+    height: 33px;
+    bottom: 74px;
+    right: 30px;
+    background-color: #25d366;
+    color: #fff;
+    border-radius: 31px;
+    text-align: center;
+    font-size: 20px;
+    box-shadow: 1px 1px 2px #888;
+    z-index: 1000;
+}
+
+.setaCima:hover {
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5)
+}
+*/
+.whatsapp-link:hover {
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5)
+}
+
+.imagemLogoRodape {
+    display: flex;
+    left: 43px;
+    width: 100%;
+    height: 32%;
+}
+
+.imagemLogoRodapeIndex {
+    display: flex;
+    width: 50%;
+    height: auto;
+}
+
+::-webkit-scrollbar {
+    width: 15px;
+
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 45px;
+}
