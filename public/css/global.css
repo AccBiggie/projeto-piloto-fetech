@@ -10,6 +10,14 @@
     margin-bottom: -0.5rem;
 }
 
+a {
+    text-decoration: none;
+}
+
+li {
+    list-style: none;
+}
+
 h1,
 h2,
 h3,
@@ -40,7 +48,7 @@ a:hover {
 }
 
 .imagemMeio {
-    width: auto;
+    width: 30%;
     height: 375px;
     margin-top: 25px;
 }

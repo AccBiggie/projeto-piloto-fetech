@@ -75,6 +75,7 @@ html {
     background-attachment: fixed;
     background-size: cover;
     border-bottom: 5px solid red;
+    padding: 2rem;
 }   
 #slider h1 {
     text-transform: uppercase;
@@ -117,6 +118,7 @@ html {
     background-color: var(--medium);
     box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.20);
     margin-top: 20px;
+    height: 100%;
 }
 
 #servicos a.destaque .img-container {
