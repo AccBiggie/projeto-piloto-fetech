@@ -70,7 +70,7 @@ html {
 }
 
 #slider {
-    background: url(/Assets/fetechwal.png);
+    background: url('/assets/logos/fetechwal.png');
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;
