@@ -10,6 +10,14 @@
     margin-bottom: -0.5rem;
 }
 
+.footer {
+    padding: 7rem;
+    background-color: #212529;
+    margin-top: 0 !important;
+    position: relative;
+    margin-bottom: 0 !important;
+}
+
 a {
     text-decoration: none;
 }
@@ -36,7 +44,8 @@ a:hover {
     color: var(--secondary);
 }
 
-.descricaoSlider, .descricaoMeioSlider {
+.descricaoSlider,
+.descricaoMeioSlider {
     font-family: 'Source Code Pro', monospace;
     margin-bottom: 40px;
     color: var(--light);
@@ -140,7 +149,7 @@ a:hover {
     align-items: center;
 }*/
 
-.botaoEnviar{
+.botaoEnviar {
     background-color: transparent;
     margin-left: 0.4rem;
     color: #fff;

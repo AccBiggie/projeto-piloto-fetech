@@ -9,27 +9,27 @@ jQuery(document).ready(function ($) {
         }
     }   
     //Slider Depoimento
-    $(".owl-carousel").owlCarousel({
-        autoplayHoverPause:true,
-        loop: true,
-        margin: 20,
-        autoplay: true,
-        autoplayTimeout: 6000,
-        dots: true,
-        lazyload: true,
-        nav: false,
-        responsive: {
-            0: {
-                items: 1,
-            },
-            600: {
-                items: 1,
-            },
-            1000: {
-                items: 2,
-            }
-        }
-    });
+    // $(".owl-carousel").owlCarousel({
+    //     autoplayHoverPause:true,
+    //     loop: true,
+    //     margin: 20,
+    //     autoplay: true,
+    //     autoplayTimeout: 6000,
+    //     dots: true,
+    //     lazyload: true,
+    //     nav: false,
+    //     responsive: {
+    //         0: {
+    //             items: 1,
+    //         },
+    //         600: {
+    //             items: 1,
+    //         },
+    //         1000: {
+    //             items: 2,
+    //         }
+    //     }
+    // });
 });
 //Botao Cima
 

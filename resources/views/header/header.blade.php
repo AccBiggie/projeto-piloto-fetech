@@ -100,7 +100,7 @@
     <div class="container">
         <h2 class="tituloDepoimento text-center">Depoimentos</h2>
         <h4 class="subtituloDepoimento text-center mb-4">Depoimentos dos clientes</h4>
-        {{-- <div class="mouseAlt owl-carousel owl-theme owl-loaded">
+        <div class="mouseAlt owl-carousel owl-theme owl-loaded">
             <div>
                 <div class="depoimento">
                     <img src="/assets/logos/andre.jpg" alt="" class="imagemDepoimento" />
@@ -108,7 +108,7 @@
                         <p class="estiloDepoimento">Acadêmico de Ciência da Computação na Faculdade SMG de Maringá.
                         </p>
                         <p class="name"><span> André Ferreira da Silva</span> / 6° Periodo, RA:52269515</p>
-                        <p class="mb-0"> <img src="/Assets/aspas.svg" class="aspas float-right" /> </p>
+                        <p class="mb-0"> <img src="/assets/logos/aspas.svg" class="aspas float-right" /> </p>
                     </div>
                 </div>
             </div>
@@ -119,7 +119,7 @@
                         <p class="estiloDepoimento">Comentário Teste.
                         </p>
                         <p class="name"><span>Teste</span></p>
-                        <p class="mb-0"> <img src="/Assets/aspas.svg" class="aspas float-right" /> </p>
+                        <p class="mb-0"> <img src="/assets/logos/aspas.svg" class="aspas float-right" /> </p>
                     </div>
                 </div>
             </div>
@@ -129,11 +129,11 @@
                     <div class="depoimento-texto pl-3">
                         <p class="estiloDepoimento"></p>
                         <p class="name"><span></span>Teste</p>
-                        <p class="mb-0"> <img src="/Assets/aspas.svg" class="aspas float-right" /> </p>
+                        <p class="mb-0"> <img src="/assets/logos/aspas.svg" class="aspas float-right" /> </p>
                     </div>
                 </div>
             </div>
-        </div> --}}
+        </div>
     </div>
 </div>
 <!-- //Fim Depoimento-->
@@ -166,34 +166,6 @@
                         </div>
                     </form>
                 </div>
-                {{-- <div class="logo py-4">
-                    <div class="row"> --}}
-                        {{-- <div class="col-md-6 align-self-center text-center text-md-right">
-                            <img src="/assets/logos/LogoFetech2.svg" class="imagemLogoRodapeIndex" />
-                            <p class="Fetech"> &copy; 2022. Todos os Direitos Reservados.</p>
-                        </div> --}}
-                        {{-- <div id="redesocial" class="col-md-6 text-right">
-                            <ul>
-                                <li>
-                                    <a href="https://www.facebook.com/andre.ferreira.33234" target="_blank"><i
-                                            class="fa fa-facebook"> </i> </a></a>
-                                </li>
-                            </ul>
-                            <ul>
-                                <li>
-                                    <a href="https://www.youtube.com/channel/UCkCI3DxLklu2IJxjN7PixwA"
-                                        target="_blank"><i class="fa fa-youtube"> </i> </a></a>
-                                </li>
-                            </ul>
-                            <ul>
-                                <li>
-                                    <a href="https://www.instagram.com/fetech.informatica/" target="_blank"><i
-                                            class="fa fa-instagram"> </i> </a></a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div> --}}
             </div>
         </div>
     </div>
