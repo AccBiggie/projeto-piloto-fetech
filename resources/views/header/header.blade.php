@@ -5,8 +5,8 @@
             <div class="col-md-4 align-self-center">
                 <h1 class="descricaoSlider"> Orçamento sem compromisso</h1>
                 <h4 class="descricaoMeioSlider">Solicite já o seu orçamento!</h4>
-                <a href="#contato" class="btn botaocontato btn-outline-primary d-md-inline-block d-block">Entrar em
-                    contato.</a>
+                <a href="#contato" class="btn btn-primary button-primay">Entre em
+                    contato</a>
             </div>
             <div class="col-md-8 align-self-center text-center">
                 <img src="/assets/logos/devTeste.svg" class="img-fluid">
@@ -96,11 +96,11 @@
 </div>
 <!-- Fim Serviços Feitos pela Fetech-->
 <!--Inicio Depoimentos-->
-<div id="depoimentos" class="block">
+{{-- <div id="depoimentos" class="block">
     <div class="container">
         <h2 class="tituloDepoimento text-center">Depoimentos</h2>
-        <h4 class="subtituloDepoimento text-center mb-4">Depoimentos dos clientes</h4>
-        <div class="mouseAlt owl-carousel owl-theme owl-loaded">
+        <h4 class="subtituloDepoimento text-center mb-4">Depoimentos dos clientes</h4> --}}
+{{-- <div class="mouseAlt owl-carousel owl-theme owl-loaded">
             <div>
                 <div class="depoimento">
                     <img src="/assets/logos/andre.jpg" alt="" class="imagemDepoimento" />
@@ -133,9 +133,9 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
+        </div> --}}
+{{-- </div>
+</div> --}}
 <!-- //Fim Depoimento-->
 <!--Rodape-->
 <section id="contato">
@@ -146,25 +146,24 @@
                     <img src="/assets/logos/email.svg" />
                     <h2 class="titulocontato text-center">Entre em contato conosco!</h2>
                     <h4 class="subtitulocontato text-center mb-4">Para solicitar nossos serviços ou orçamentos.</h4>
-                    <form action="https://formsubmit.co/accbiggie@gmail.com" method="POST">
-                        <div class="flex-md-grow-1 pr-md-3 pb-md-0 pb-3">
-                            <input type="hidden" name="_next"
-                                value="https://accbiggie.github.io/indexHTML/acesso.html" />
-                            <input type="hidden" name="_autoresponse"
-                                value="Recebemos sua mensagem, agradecemos o contato e logo responderemos!" />
-                            <input type="hidden" name="_captcha" value="false">
-                            <label for="email_input" class="sr-only"></label>
-                            <input type="text" name="name" class="form-control w-100" id="email_input"
-                                placeholder="Nome" required />
-                            <input type="email" name="email" class="form-control w100" placeholder="Email"
-                                required />
-                            <input type="text" name="subject" class="form-control w-100" id="email_input"
-                                placeholder="Assunto" required />
-                            <input type="text" name="message" class="form-control w-100" id="email_input"
-                                placeholder="Mensagem" required />
-                            <button type="submit" class="botaoEnviar btn btn-light">Enviar</button>
-                        </div>
-                    </form>
+                    {!! Form::open(['url' => action('SendEmailController@sendEmail'), 'method' => 'POST', 'id' => 'send_email']) !!}
+                    <div class="flex-md-grow-1 pr-md-3 pb-md-0 pb-3">
+                        <input type="hidden" name="_next"
+                            value="https://accbiggie.github.io/indexHTML/acesso.html" />
+                        <input type="hidden" name="_autoresponse"
+                            value="Recebemos sua mensagem, agradecemos o contato e logo responderemos!" />
+                        <input type="hidden" name="_captcha" value="false">
+                        <label for="email_input" class="sr-only"></label>
+                        <input type="text" name="name" class="form-control w-100" id="email_input"
+                            placeholder="Nome" required />
+                        <input type="email" name="email" class="form-control w100" placeholder="Email" required />
+                        <input type="text" name="subject" class="form-control w-100" id="email_input"
+                            placeholder="Assunto" required />
+                        <input type="text" name="message" class="form-control w-100" id="email_input"
+                            placeholder="Mensagem" required />
+                        <button type="submit" class="botaoEnviar btn btn-light">Enviar</button>
+                    </div>
+                    {!! Form::close() !!}
                 </div>
             </div>
         </div>

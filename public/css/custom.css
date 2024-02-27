@@ -76,6 +76,7 @@ html {
     background-size: cover;
     border-bottom: 5px solid red;
     padding: 2rem;
+    height: 30rem;
 }   
 #slider h1 {
     text-transform: uppercase;

@@ -20,8 +20,15 @@ Route::get('/', function () {
 Route::prefix('fetech')->name('fetech.')->group(function () {
     Route::middleware(['guest:web'])->group(function () {
         Route::view('/index', 'home.home')->name('home');
+        Route::post('/enviar-email', 'SendEmailController@sendEmail');
     });
 
     Route::middleware(['auth:web'])->group(function () {
     });
+
 });
+
+
+
+
+
