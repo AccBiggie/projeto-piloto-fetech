@@ -7,7 +7,7 @@ jQuery(document).ready(function ($) {
         } else {
             $('#header').removeClass("active");
         }
-    }   
+    }
     //Slider Depoimento
     // $(".owl-carousel").owlCarousel({
     //     autoplayHoverPause:true,
@@ -30,19 +30,28 @@ jQuery(document).ready(function ($) {
     //         }
     //     }
     // });
+
+    $(document).on('click', 'button.btn[data-bs-dismiss="offcanvas"]', function (e) {
+        $(this).closest('.container-xl').remove();
+    });
+
+    $(document).click(function (event) {
+        $('.container-xl').remove();
+    });
 });
 //Botao Cima
 
+
 var botao = $('#botaoCima');
-$(window).scroll(function() {
-    if($(window).scrollTop() > 300){
+$(window).scroll(function () {
+    if ($(window).scrollTop() > 300) {
         botao.addClass('active');
     } else {
         botao.removeClass('active')
     }
 });
 
-botao.on('click', function(e){
+botao.on('click', function (e) {
     e.preventDefault();
-    $('html, body').animate({scrollTop:0}, '100');
+    $('html, body').animate({ scrollTop: 0 }, '100');
 });

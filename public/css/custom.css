@@ -207,8 +207,8 @@ html {
 
 #contato .mensagem img {
     position: absolute;
-    left: 30px;
-    top: -30px;
+    left: 40px;
+    top: 2rem;
 }
 
 #contato .mensagem form {

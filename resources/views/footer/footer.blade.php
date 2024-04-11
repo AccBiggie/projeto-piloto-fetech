@@ -1,8 +1,10 @@
 <!--Rodape-->
 <section id="footer">
+    @include('components.cookie')
     <footer class="footer d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
         <div class="col-md-6 d-flex align-items-center">
-            <a href="/" class="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1">
+            <a href="/" class="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1" data-toggle="tooltip"
+                title="Logo Fetech!">
                 <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="200.000000pt" height="55.000000pt"
                     viewBox="0 0 200.000000 55.000000" preserveAspectRatio="xMidYMid meet">
 
@@ -45,7 +47,7 @@ c73 0 80 2 80 20 0 19 -7 20 -100 20 l-100 0 0 -165z" />
         </div>
 
         <ul class="nav col-md-4 justify-content-end list-unstyled d-flex">
-            <li class="ms-3">
+            <li class="ms-3" title="Visite-nos no Youtube!">
                 <a class="text-body-secondary" href="#">
                     <svg width="24" height="24" viewBox="0 0 16 16" fill="none"
                         xmlns="http://www.w3.org/2000/svg">
@@ -56,7 +58,7 @@ c73 0 80 2 80 20 0 19 -7 20 -100 20 l-100 0 0 -165z" />
 
                 </a>
             </li>
-            <li class="ms-3">
+            <li class="ms-3" title="Visite-nos no Instagram">
                 <a class="text-body-secondary" href="#">
                     <svg width="24" height="24" viewBox="0 0 16 16" fill="none"
                         xmlns="http://www.w3.org/2000/svg">
@@ -67,7 +69,7 @@ c73 0 80 2 80 20 0 19 -7 20 -100 20 l-100 0 0 -165z" />
 
                 </a>
             </li>
-            <li class="ms-3">
+            <li class="ms-3" title="Visite-nos no Facebook!">
                 <a class="text-body-secondary" href="#">
                     <svg width="24" height="24" viewBox="0 0 16 16" fill="none"
                         xmlns="http://www.w3.org/2000/svg">
@@ -75,7 +77,6 @@ c73 0 80 2 80 20 0 19 -7 20 -100 20 l-100 0 0 -165z" />
                             d="M16 8.0486C16 3.60314 12.418 -0.000610352 7.99949 -0.000610352C3.58095 -0.000610352 -0.000976562 3.60314 -0.000976562 8.0486C-0.000976562 12.0662 2.92468 15.3962 6.74942 16V10.3753H4.71805V8.0486H6.74942V6.27526C6.74942 4.25792 7.94383 3.14361 9.77132 3.14361C10.6466 3.14361 11.5622 3.30082 11.5622 3.30082V5.28168H10.5534C9.55951 5.28168 9.24957 5.90215 9.24957 6.53869V8.0486H11.4684L11.1137 10.3753H9.24957V16C13.0743 15.3962 16 12.0662 16 8.0486Z"
                             fill="white" />
                     </svg>
-
                 </a>
             </li>
         </ul>

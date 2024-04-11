@@ -7744,7 +7744,7 @@ fieldset:disabled .btn {
 }
 
 .border-top {
-    border-top: 1px solid #dee2e6 !important
+    border-top: 3px solid red !important
 }
 
 .border-top-0 {

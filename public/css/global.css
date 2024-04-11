@@ -230,3 +230,15 @@ a:hover {
     background-color: #888;
     border-radius: 45px;
 }
+
+footer>ul>li>a.text-body-secondary {
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: background .2s;
+    display: flex;
+    align-items: center
+}
+
+footer>ul>li>a.text-body-secondary:hover {
+    background-color: #888;
+}
