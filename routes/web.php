@@ -28,6 +28,8 @@ Route::prefix('fetech')->name('fetech.')->group(function () {
 
 });
 
+Route::resource('blog', 'BlogController')->except(['show']);
+
 
 
 

@@ -2,7 +2,7 @@
         <a class="navbar-brand" href="#">
             <img src="/assets/logos/ProjetoLogoFetech2.svg" class="img-fluid" />
         </a>
-       
+
         <button class="navbar-toggler " type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
             div:aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -20,6 +20,9 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#contato">Contato</a>
+                </li>
+                <li class="nav-item">
+                    <a href="" class="nav-link">Blog</a>
                 </li>
                 {{-- <li class="nav-item">
                     <a class="nav-link" href="/indexHTML/blog.html" target="_blank">Blog</a>
