@@ -1,4 +1,4 @@
-<p align="center"><a href="https://accbiggie.github.io/" target="_blank"><img src="asset('logos/ProjetoLogoFetech2.svg')" width="400" alt="Fetech Logo"></a></p>
+<p align="center"><a href="https://raw.githubusercontent.com/AccBiggie/projeto-piloto-fetech/8c28afb4c0cd7fb2f86d116807097ff96c5e839a/public/assets/logos/ProjetoLogoFetech2.svg" width="400" alt="Fetech Logo"></a></p>
 
 <p align="center">
 <a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
