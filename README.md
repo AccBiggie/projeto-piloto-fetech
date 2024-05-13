@@ -2,7 +2,7 @@
 
 <p align="center">
 <a href="https://www.instagram.com/fetech.informatica/">
-<img src="https://raw.githubusercontent.com/AccBiggie/projeto-piloto-fetech/075be14e05f6f4184a437565b819b5e5599a33dd/public/assets/logos/LogoHeader.svg" alt="Fetech Instagram" title="Fetech Instagram"></a>
+<i class="fa fa-instagram" alt="Fetech Instagram" title="Fetech Instagram"> </i> </a>
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
