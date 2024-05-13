@@ -7,7 +7,6 @@ A mais de 3 anos no mercado, a FETECH é uma empresa especializada em reparos de
 - [Front-end](HTML5, CSS, Javascript, Bootstrap).
 - Ambiente de desenvolvimento com [Docker](https://docs.docker.com/).
 - Back-end - [PHP8x](https://www.php.net/manual/en/) - [LARAVEL 8x](https://laravel.com/docs/8.x).
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
 - Banco de dados [MYSQL](https://dev.mysql.com/doc/) com [migrações de esquema](https://laravel.com/docs/migrations).
 
 ##
