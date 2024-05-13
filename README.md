@@ -4,7 +4,7 @@
 
 A mais de 3 anos no mercado, a FETECH é uma empresa especializada em reparos de computadores e seus periféricos e televisores. O projeto consiste em criar um ambiente onde possa ser feito o Portifólio empresarial através de um site e sistema de gestão que irá controlar algumas rotinas essênciais da empresa, abaixo constam as tecnologias que serão utilizadas:
 
-- [Front-end](HTML5, CSS, Javascript, Bootstrap).
+- Front-end - [HTML5, Bootstrap](https://getbootstrap.com/docs/5.0/getting-started/introduction/), CSS, [Javascript](https://devdocs.io/javascript/).
 - Ambiente de desenvolvimento com [Docker](https://docs.docker.com/).
 - Back-end - [PHP8x](https://www.php.net/manual/en/) - [LARAVEL 8x](https://laravel.com/docs/8.x).
 - Banco de dados [MYSQL](https://dev.mysql.com/doc/) com [migrações de esquema](https://laravel.com/docs/migrations).
