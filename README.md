@@ -1,4 +1,4 @@
-<p align="center"><a href="https://accbiggie.github.io/" target="_blank"><img src="https://raw.githubusercontent.com/AccBiggie/projeto-piloto-fetech/21d66e9b8272f105644beff50301c6b601c6f5d9/public/assets/logos/LogoFetech2.svg" width="400" alt="Fetech Logo" title="Fetech Logo></a></p>
+<p align="center"><a href="https://accbiggie.github.io/" target="_blank"><img src="https://raw.githubusercontent.com/AccBiggie/projeto-piloto-fetech/21d66e9b8272f105644beff50301c6b601c6f5d9/public/assets/logos/LogoFetech2.svg" width="400" alt="Fetech Logo" title="Fetech Logo"></a></p>
 
 ## Sobre a FETECH
 
