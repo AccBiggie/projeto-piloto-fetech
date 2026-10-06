@@ -12,3 +12,22 @@ A mais de 3 anos no mercado, a FETECH é uma empresa especializada em reparos de
 ##
 
 <p align="center"><a href="https://accbiggie.github.io/" target="_blank"><img src="https://raw.githubusercontent.com/AccBiggie/projeto-piloto-fetech/8171bdaf63b03657f1e70a4842e89f812b9df161/public/assets/logos/LogoHeader.svg" width="200" alt="Fetech Logo" title="Fetech Logo"></a></p>
+
+## Executar no WSL com Docker Engine
+
+No terminal do WSL, a partir da pasta do projeto:
+
+```bash
+cp .env.example .env
+docker compose up -d --build
+docker compose exec --user "$(id -u):$(id -g)" webserver composer install
+docker compose exec --user "$(id -u):$(id -g)" webserver php artisan key:generate
+docker compose exec webserver sh -c "chgrp www-data .env && chmod 640 .env"
+docker compose exec webserver sh -c "chgrp -R www-data storage bootstrap/cache && chmod -R g+rwX storage bootstrap/cache"
+docker compose exec webserver php artisan migrate
+```
+
+O arquivo `.env` local não é versionado.
+
+Aplicação: http://localhost:3001/fetech/index. phpMyAdmin: http://localhost:8080.
+Os dados do MySQL ficam no volume Docker `mysql_data`.
