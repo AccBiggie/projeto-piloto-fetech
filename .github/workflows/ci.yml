@@ -1,0 +1,82 @@
+# Verificações de PR. Na proteção da branch production, marque como obrigatórios os
+# jobs "Origem da PR", "Backend", "Frontend" e "Imagens de produção".
+name: CI
+
+on:
+  pull_request:
+    branches: [main, production]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  source:
+    name: Origem da PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Produção só recebe PR vinda da main
+        if: github.event_name == 'pull_request' && github.base_ref == 'production'
+        # Nomes de branch/repo vêm de quem abre a PR: só por variável de ambiente, nunca direto no script
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          if [ "$HEAD_REF" != "main" ] || [ "$HEAD_REPO" != "$REPO" ]; then
+            echo "::error::A branch production só aceita PR vinda da main deste repositório (recebido: $HEAD_REPO:$HEAD_REF)."
+            exit 1
+          fi
+      - run: echo "Origem ok."
+
+  backend:
+    name: Backend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.5"
+          extensions: bcmath, intl, pdo_mysql, redis, zip
+          coverage: none
+          tools: composer:v2
+      - run: composer install --no-interaction --prefer-dist --no-progress
+      - run: cp .env.example .env && php artisan key:generate
+      - run: php artisan test
+
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: npm }
+      - run: npm ci
+      # O build roda o typecheck (tsc --noEmit) antes do Vite
+      - run: npm run build
+
+  images:
+    name: Imagens de produção
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      # Expõe o cache do GitHub Actions ao buildx: a compilação das extensões do PHP só roda quando o Dockerfile muda
+      - uses: crazy-max/ghaction-github-runtime@v3
+      - name: Build das imagens do docker-compose.prod.yml
+        env:
+          DB_DATABASE: ci
+          DB_USERNAME: ci
+          DB_PASSWORD: ci
+          DB_ROOT_PASSWORD: ci
+        run: |
+          cp .env.production.example .env
+          docker compose -f docker-compose.prod.yml config --quiet
+          docker buildx bake -f docker-compose.prod.yml app web \
+            --set '*.cache-from=type=gha,scope=fetech' \
+            --set '*.cache-to=type=gha,scope=fetech,mode=max'
