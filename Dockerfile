@@ -1,18 +1,22 @@
-FROM php:8.0-apache
+FROM php:8.5-fpm-alpine
 
 ARG TZ=America/Sao_Paulo
+ARG UID=1000
+ARG GID=1000
 ENV TZ=${TZ}
 
-RUN sed -i 's|http://deb.debian.org/debian-security|http://archive.debian.org/debian-security|; s|http://deb.debian.org/debian|http://archive.debian.org/debian|' /etc/apt/sources.list \
-    && apt-get update -o Acquire::Check-Valid-Until=false \
-    && apt-get install -y --no-install-recommends libpng-dev libxslt1-dev libzip-dev unzip \
-    && docker-php-ext-install bcmath gd pdo_mysql xsl zip \
-    && a2enmod rewrite \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache icu-libs libzip tzdata \
+    && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS icu-dev libzip-dev linux-headers shadow \
+    && docker-php-ext-install bcmath intl pdo_mysql zip \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
+    # www-data com o mesmo UID do usuário do WSL: arquivos criados pelo PHP ficam com o dono certo no bind mount
+    && usermod -u ${UID} www-data && groupmod -g ${GID} www-data \
+    && apk del .build-deps \
+    && rm -rf /tmp/pear
 
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
-COPY fetech.conf /etc/apache2/sites-available/fetech.conf
-RUN a2dissite 000-default && a2ensite fetech.conf
+COPY docker/php/php.ini /usr/local/etc/php/conf.d/zz-fetech.ini
+COPY docker/php/www.conf /usr/local/etc/php-fpm.d/zz-fetech.conf
 
-EXPOSE 80
-CMD ["apache2-foreground"]
+WORKDIR /var/www/html
