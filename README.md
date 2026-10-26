@@ -69,3 +69,23 @@ O tráfego passa por duas camadas antes de chegar à aplicação:
 Também há cabeçalhos de segurança (CSP com nonce, `X-Frame-Options`, `nosniff`), validação de todos os campos no servidor e um campo honeypot contra bots no formulário.
 
 Essas camadas seguram floods de aplicação (muitas requisições de poucos IPs). Ataques volumétricos distribuídos (DDoS de rede) precisam ser barrados antes do servidor, por um CDN/WAF como Cloudflare. Nesse caso, configure `real_ip` no Nginx para que os limites usem o IP do visitante.
+
+## CI/CD e deploy
+
+- **`main`**: recebe os PRs das branches de trabalho. O CI (`.github/workflows/ci.yml`) roda os testes do backend, o build do frontend e o build das imagens de produção.
+- **`production`**: branch do deploy. Só recebe alterações por PR vinda da `main`; não aceita push direto. Cada merge dispara o CD (`.github/workflows/deploy.yml`), que entra na VPS por SSH e roda `deploy/deploy.sh`.
+
+O Fetech divide a VPS com o projeto wedding, mas tem usuário (`fetech`), pasta (`/opt/fetech`), chave SSH, containers, banco e volumes próprios. O HTTPS é feito pelo Caddy da VPS: o deploy grava `deploy/caddy/fetech.caddy` em `/opt/caddy-sites` e recarrega o Caddy, que alcança o Nginx do Fetech pela rede Docker `proxy`.
+
+### Preparação (uma vez)
+
+1. **Wedding**: publicar em produção a versão em que o Caddy importa `/opt/caddy-sites` e entra na rede `proxy`.
+2. **VPS, como root**: `bash setup-vps.sh "<chave pública do CI>"` (o script está em `deploy/`). Ele cria o usuário `fetech`, a rede `proxy`, a pasta `/opt/caddy-sites` e clona o repositório em `/opt/fetech`.
+3. **VPS, como `fetech`**: criar `/opt/fetech/.env` a partir de `.env.production.example`. Preencha o domínio, a `APP_KEY`, as senhas do banco e o SMTP.
+4. **DNS**: apontar o domínio (registro A/AAAA) para o IP da VPS.
+5. **GitHub > Settings > Secrets and variables > Actions**:
+   - Secrets: `VPS_HOST`, `VPS_USER` (`fetech`), `VPS_SSH_KEY` (chave privada do CI), `VPS_KNOWN_HOSTS` (`ssh-keyscan -t ed25519 <host>`) e, se a porta não for 22, `VPS_PORT`.
+   - Variável: `SITE_URL` (`https://seu-dominio.com.br`).
+6. **GitHub > Settings > Rules > Rulesets**: proteger a `production` exigindo PR e os checks do CI e bloqueando push direto e force push.
+
+Deploy manual: **Actions > Deploy > Run workflow**. Backups diários do banco ficam em `/opt/fetech/backups` (14 dias).
