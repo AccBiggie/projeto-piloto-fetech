@@ -1,39 +1,86 @@
 services:
-  webserver:
-    container_name: fetech-serve
+  app:
+    container_name: fetech-app
     build:
       context: .
-    restart: always
-    ports:
-      - "3001:80"
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    # Mesmo UID do usuário do WSL: composer/artisan não criam arquivos como root
+    user: "${UID:-1000}:${GID:-1000}"
+    restart: unless-stopped
     volumes:
-      - ./:/var/www/html/
-  #  environment:
-  #    APP_ENV: local
-  #    APP_DEBUG: true
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - ./:/var/www/html
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  web:
+    container_name: fetech-web
+    image: nginx:1.30-alpine
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3001:80"
+    volumes:
+      - ./public:/var/www/html/public:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - app
+
   db:
-      container_name: fetech-mysql
-      image: mysql:8.0
-      restart: "always"
-      environment:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: test_db
-      ports:
-          - "3308:3306"
-      volumes:
-          - mysql_data:/var/lib/mysql
+    container_name: fetech-mysql
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: test_db
+    ports:
+      - "127.0.0.1:3308:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot", "--silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # Cache, sessões e contadores de rate limit
+  redis:
+    container_name: fetech-redis
+    image: redis:8-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
   phpmyadmin:
-      container_name: fetech-phpmyadmin
-      image: phpmyadmin/phpmyadmin:latest
-      restart: "always"
-      environment:
-          PMA_HOST: db
-          PMA_USER: root
-          PMA_PASSWORD: root
-      ports:
-          - "8080:80"
+    container_name: fetech-phpmyadmin
+    image: phpmyadmin:latest
+    restart: unless-stopped
+    environment:
+      PMA_HOST: db
+    ports:
+      - "127.0.0.1:8080:80"
+    depends_on:
+      - db
+
+  # Servidor do Vite (HMR). Só sobe com: docker compose --profile dev up -d
+  node:
+    container_name: fetech-node
+    image: node:24-alpine
+    profiles: ["dev"]
+    user: "${UID:-1000}:${GID:-1000}"
+    working_dir: /var/www/html
+    command: sh -c "npm ci && npm run dev"
+    volumes:
+      - ./:/var/www/html
+    ports:
+      - "127.0.0.1:5173:5173"
 
 volumes:
   mysql_data:
