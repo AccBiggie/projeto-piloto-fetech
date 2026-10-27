@@ -5,6 +5,7 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 
 import SectionTitle from '@/components/SectionTitle';
+import { useReveal } from '@/reveal/useReveal';
 import { brand } from '@/theme';
 
 const services = [
@@ -31,11 +32,12 @@ const services = [
 ];
 
 export default function Services() {
+    const cards = useReveal({ stagger: true, delay: 80 });
     return (
-        <Box component="section" id="servicos" sx={{ bgcolor: brand.section, py: { xs: 8, md: 12.5 }, scrollMarginTop: 64 }}>
+        <Box component="section" id="servicos" sx={{ bgcolor: brand.section, py: { xs: 8, md: 12.5 } }}>
             <Container maxWidth="lg">
                 <SectionTitle>Serviços</SectionTitle>
-                <Grid container spacing={2}>
+                <Grid container spacing={2} {...cards}>
                     {services.map((service) => (
                         <Grid key={service.title} size={{ xs: 12, sm: 6, lg: 3 }}>
                             <Box
