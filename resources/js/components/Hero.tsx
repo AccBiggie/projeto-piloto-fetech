@@ -19,6 +19,13 @@ const blink = keyframes`
 
 const noMotion = { '@media (prefers-reduced-motion: reduce)': { animation: 'none' } };
 
+// Entrada curta e discreta da chamada, que já está na tela ao carregar
+const heroIn = keyframes`
+    from { opacity: 0; transform: translate3d(0, 8px, 0); }
+    to { opacity: 1; transform: none; }
+`;
+const entrance = (delay: number) => ({ animation: `${heroIn} .7s cubic-bezier(.22,.61,.36,1) ${delay}ms both`, ...noMotion });
+
 // Triângulo de cantos arredondados: o traço grosso com junção redonda arredonda as pontas
 function Triangle({ x, y, size, fill, flip = false }: { x: number; y: number; size: number; fill: string; flip?: boolean }) {
     const h = size * 0.866;
@@ -98,7 +105,7 @@ export default function Hero() {
                         </Box>
                     </Grid>
                     <Grid size={{ xs: 12, md: 6 }} sx={{ textAlign: 'right' }}>
-                        <Typography variant="h2" component="h1" sx={{ fontSize: { xs: 30, md: 50 }, lineHeight: 1.2, mb: 3 }}>
+                        <Typography variant="h2" component="h1" sx={{ fontSize: { xs: 30, md: 50 }, lineHeight: 1.2, mb: 3, ...entrance(0) }}>
                             Assistência técnica e soluções em TI para você e sua empresa.
                         </Typography>
                         <Button
@@ -106,7 +113,7 @@ export default function Hero() {
                             color="inherit"
                             size="large"
                             href="#contato"
-                            sx={{ textTransform: 'uppercase', borderColor: '#fff', '&:hover': { bgcolor: '#fff', color: brand.red } }}
+                            sx={{ textTransform: 'uppercase', borderColor: '#fff', '&:hover': { bgcolor: '#fff', color: brand.red }, ...entrance(120) }}
                         >
                             Solicite seu orçamento
                         </Button>

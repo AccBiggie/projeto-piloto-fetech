@@ -17,6 +17,7 @@ import AnimatedFetechLogo from '@/components/AnimatedFetechLogo';
 import FetechLogo from '@/components/FetechLogo';
 import { whatsappNumber, whatsappUrl } from '@/components/FloatingActions';
 import { navItems } from '@/components/Header';
+import { useReveal } from '@/reveal/useReveal';
 import { brand } from '@/theme';
 
 // Endereços das redes sociais ainda não definidos (no site antigo também eram "#")
@@ -39,11 +40,12 @@ const columnTitleSx = { color: '#fff', fontSize: 18, textTransform: 'uppercase',
 const linkSx = { color: brand.footerText, lineHeight: '25px', textDecoration: 'none', transition: 'color .3s ease-in', '&:hover': { color: '#fff' } } as const;
 
 export default function Footer() {
+    const columns = useReveal({ stagger: true, preset: 'fade' });
     return (
         <Box component="footer">
             <Box sx={{ bgcolor: brand.footer, py: { xs: 6, md: 8.75 } }}>
                 <Container maxWidth="lg">
-                    <Grid container spacing={4} sx={{ textAlign: { xs: 'center', lg: 'left' } }}>
+                    <Grid container spacing={4} {...columns} sx={{ textAlign: { xs: 'center', lg: 'left' } }}>
                         <Grid size={{ xs: 12, lg: 3 }}>
                             <Box component={RouterLink} to="/" aria-label="Fetech: página inicial" sx={{ color: '#fff', display: 'inline-flex' }}>
                                 <FetechLogo sx={{ width: 200, height: 55 }} />

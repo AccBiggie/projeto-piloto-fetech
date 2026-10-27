@@ -1,11 +1,14 @@
 import Typography, { type TypographyProps } from '@mui/material/Typography';
 
+import { useReveal } from '@/reveal/useReveal';
 import { titleFont } from '@/theme';
 
-// Título de seção em caixa alta, alinhado à esquerda, como na referência
+// Título de seção em caixa alta, alinhado à esquerda, como na referência. Sobe ao entrar na tela.
 export default function SectionTitle({ sx, ...props }: TypographyProps) {
+    const reveal = useReveal();
     return (
         <Typography
+            {...reveal}
             variant="h3"
             component="h2"
             sx={[

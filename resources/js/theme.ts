@@ -1,5 +1,7 @@
 import { createTheme } from '@mui/material/styles';
 
+import { revealCss } from '@/reveal/revealObserver';
+
 // Layout inspirado em tytotech.com.br, com a paleta da Fetech.
 // Para trocar a identidade visual, basta mudar os tokens abaixo.
 export const brand = {
@@ -44,6 +46,9 @@ export const theme = createTheme({
         button: { textTransform: 'none', fontWeight: 600 },
     },
     components: {
+        MuiCssBaseline: {
+            styleOverrides: revealCss,
+        },
         MuiButton: {
             defaultProps: { disableElevation: true },
             styleOverrides: { root: { borderRadius: 4, paddingInline: 22 } },
