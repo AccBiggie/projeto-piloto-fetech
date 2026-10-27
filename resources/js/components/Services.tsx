@@ -9,6 +9,7 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
+import { Link as RouterLink } from 'react-router';
 
 import SectionTitle from '@/components/SectionTitle';
 import { useReveal } from '@/reveal/useReveal';
@@ -136,7 +137,7 @@ export default function Services() {
                 <Grid container spacing={2} {...cards}>
                     {services.map((service) => (
                         <Grid key={service.title} size={{ xs: 12, sm: 6, lg: 4 }}>
-                            <Box component="a" id={service.id} href="#contato" sx={cardSx}>
+                            <Box component={RouterLink} id={service.id} to="/orcamento-site" sx={cardSx}>
                                 <Box className="icone" sx={iconSx}>
                                     <service.Icon aria-hidden="true" sx={{ fontSize: 48 }} />
                                 </Box>
