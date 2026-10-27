@@ -13,6 +13,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { Link as RouterLink } from 'react-router';
 
+import AnimatedFetechLogo from '@/components/AnimatedFetechLogo';
 import FetechLogo from '@/components/FetechLogo';
 import { whatsappNumber, whatsappUrl } from '@/components/FloatingActions';
 import { navItems } from '@/components/Header';
@@ -146,18 +147,30 @@ export default function Footer() {
                 </Container>
             </Box>
 
-            <Box sx={{ bgcolor: brand.copyright, py: 1.25 }}>
+            <Box data-barra-final sx={{ bgcolor: brand.copyright, py: 1.25 }}>
                 <Container maxWidth="lg">
                     <Stack
                         direction={{ xs: 'column', lg: 'row' }}
                         spacing={1}
-                        sx={{ alignItems: 'center', justifyContent: 'space-between' }}
+                        sx={{ alignItems: { xs: 'center', lg: 'flex-end' }, justifyContent: 'space-between' }}
                     >
                         <Typography sx={{ color: brand.footerText, fontSize: 13, textAlign: { xs: 'center', lg: 'left' } }}>
                             © {new Date().getFullYear()} Fetech Hardware & Technology. Todos os direitos reservados.
                         </Typography>
-                        <Box component={RouterLink} to="/" aria-label="Fetech: página inicial" sx={{ color: brand.footerText, display: 'flex' }}>
-                            <FetechLogo sx={{ width: 85, height: 'auto', aspectRatio: '200 / 55' }} />
+                        <Box
+                            component={RouterLink}
+                            to="/"
+                            aria-label="Fetech: página inicial"
+                            sx={{
+                                display: 'flex',
+                                fill: brand.footerText,
+                                // Cor exata da barra: desenha o contorno que separa os bonecos das letras
+                                '--fx-fundo': brand.copyright,
+                                borderRadius: 0.5,
+                                '&:focus-visible': { outline: `2px solid ${brand.footerText}`, outlineOffset: 2 },
+                            }}
+                        >
+                            <AnimatedFetechLogo />
                         </Box>
                     </Stack>
                 </Container>
