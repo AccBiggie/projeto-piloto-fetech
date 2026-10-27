@@ -47,7 +47,13 @@ export const theme = createTheme({
     },
     components: {
         MuiCssBaseline: {
-            styleOverrides: revealCss,
+            // Âncoras da página rolam suave e param abaixo do menu fixo (64 px no celular, 72 px no computador)
+            styleOverrides: `
+                html { scroll-padding-top: 64px; }
+                @media (min-width: 900px) { html { scroll-padding-top: 72px; } }
+                @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+                ${revealCss}
+            `,
         },
         MuiButton: {
             defaultProps: { disableElevation: true },

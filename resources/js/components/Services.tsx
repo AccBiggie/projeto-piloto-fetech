@@ -34,7 +34,7 @@ const services = [
 export default function Services() {
     const cards = useReveal({ stagger: true, delay: 80 });
     return (
-        <Box component="section" id="servicos" sx={{ bgcolor: brand.section, py: { xs: 8, md: 12.5 }, scrollMarginTop: 64 }}>
+        <Box component="section" id="servicos" sx={{ bgcolor: brand.section, py: { xs: 8, md: 12.5 } }}>
             <Container maxWidth="lg">
                 <SectionTitle>Serviços</SectionTitle>
                 <Grid container spacing={2} {...cards}>

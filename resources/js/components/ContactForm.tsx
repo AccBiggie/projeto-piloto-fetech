@@ -44,7 +44,7 @@ export default function ContactForm() {
     }
 
     return (
-        <Box component="section" id="contato" sx={{ bgcolor: brand.sectionAlt, py: { xs: 8, md: 12.5 }, scrollMarginTop: 64 }}>
+        <Box component="section" id="contato" sx={{ bgcolor: brand.sectionAlt, py: { xs: 8, md: 12.5 } }}>
             <Container maxWidth="lg">
                 <SectionTitle>Contato</SectionTitle>
                 <Paper {...card} elevation={0} sx={{ border: `1px solid ${brand.section}`, borderRadius: 2.5, p: { xs: 3, md: 6 } }}>
