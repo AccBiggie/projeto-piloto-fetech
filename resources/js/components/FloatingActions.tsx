@@ -7,7 +7,8 @@ import useScrollTrigger from '@mui/material/useScrollTrigger';
 
 import { brand } from '@/theme';
 
-const whatsappUrl = 'https://wa.me/5544998833731';
+export const whatsappNumber = '5544998833731';
+export const whatsappUrl = `https://wa.me/${whatsappNumber}`;
 
 export default function FloatingActions() {
     const showTop = useScrollTrigger({ disableHysteresis: true, threshold: 300 });
