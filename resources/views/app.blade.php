@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Fetech: assistência técnica em computadores, notebooks, periféricos e televisores.">
-    <title>{{ config('app.name') }}</title>
+    <title>{{ config('app.name') }} – Professional Hardware and Technology</title>
     <link rel="icon" href="/assets/logos/LogoHeader.png" type="image/png">
     @viteReactRefresh
     @vite('resources/js/main.tsx')
