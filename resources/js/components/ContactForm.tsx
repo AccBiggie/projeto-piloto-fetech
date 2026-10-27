@@ -12,6 +12,7 @@ import { type FormEvent, useState } from 'react';
 
 import { type ContactPayload, type ContactResult, sendContact } from '@/api/contact';
 import SectionTitle from '@/components/SectionTitle';
+import { useReveal } from '@/reveal/useReveal';
 import { brand } from '@/theme';
 
 const emptyForm: ContactPayload = { name: '', email: '', subject: '', message: '', website: '' };
@@ -29,6 +30,7 @@ export default function ContactForm() {
     const [result, setResult] = useState<ContactResult | null>(null);
 
     const errors = result && !result.ok ? result.errors : undefined;
+    const card = useReveal({ delay: 80 });
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -42,10 +44,10 @@ export default function ContactForm() {
     }
 
     return (
-        <Box component="section" id="contato" sx={{ bgcolor: brand.sectionAlt, py: { xs: 8, md: 12.5 }, scrollMarginTop: 64 }}>
+        <Box component="section" id="contato" sx={{ bgcolor: brand.sectionAlt, py: { xs: 8, md: 12.5 } }}>
             <Container maxWidth="lg">
                 <SectionTitle>Contato</SectionTitle>
-                <Paper elevation={0} sx={{ border: `1px solid ${brand.section}`, borderRadius: 2.5, p: { xs: 3, md: 6 } }}>
+                <Paper {...card} elevation={0} sx={{ border: `1px solid ${brand.section}`, borderRadius: 2.5, p: { xs: 3, md: 6 } }}>
                     <Typography variant="h5" component="p" sx={{ textAlign: 'center', mb: 1 }}>
                         Entre em contato conosco!
                     </Typography>

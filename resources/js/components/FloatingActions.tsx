@@ -5,6 +5,7 @@ import Stack from '@mui/material/Stack';
 import Zoom from '@mui/material/Zoom';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
 
+import { scrollToSection } from '@/navigation';
 import { brand } from '@/theme';
 
 export const whatsappNumber = '5544998833731';
@@ -20,7 +21,7 @@ export default function FloatingActions() {
                     size="small"
                     color="secondary"
                     aria-label="Voltar ao topo"
-                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                    onClick={() => scrollToSection('inicio')}
                 >
                     <KeyboardArrowUpIcon />
                 </Fab>

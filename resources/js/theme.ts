@@ -1,5 +1,7 @@
 import { createTheme } from '@mui/material/styles';
 
+import { revealCss } from '@/reveal/revealObserver';
+
 // Layout inspirado em tytotech.com.br, com a paleta da Fetech.
 // Para trocar a identidade visual, basta mudar os tokens abaixo.
 export const brand = {
@@ -44,6 +46,15 @@ export const theme = createTheme({
         button: { textTransform: 'none', fontWeight: 600 },
     },
     components: {
+        MuiCssBaseline: {
+            // Âncoras da página rolam suave e param abaixo do menu fixo (64 px no celular, 72 px no computador)
+            styleOverrides: `
+                html { scroll-padding-top: 64px; }
+                @media (min-width: 900px) { html { scroll-padding-top: 72px; } }
+                @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+                ${revealCss}
+            `,
+        },
         MuiButton: {
             defaultProps: { disableElevation: true },
             styleOverrides: { root: { borderRadius: 4, paddingInline: 22 } },

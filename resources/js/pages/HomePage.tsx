@@ -5,6 +5,7 @@ import About from '@/components/About';
 import ContactForm from '@/components/ContactForm';
 import Hero from '@/components/Hero';
 import Services from '@/components/Services';
+import { scrollToSection } from '@/navigation';
 
 export default function HomePage() {
     const { hash } = useLocation();
@@ -12,7 +13,7 @@ export default function HomePage() {
     // Links do menu como "/#servicos" vindos de outra página
     useEffect(() => {
         if (hash) {
-            document.getElementById(hash.slice(1))?.scrollIntoView({ behavior: 'smooth' });
+            scrollToSection(hash.slice(1));
         }
     }, [hash]);
 
