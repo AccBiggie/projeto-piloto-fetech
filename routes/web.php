@@ -8,3 +8,4 @@ Route::permanentRedirect('/fetech/index', '/');
 // Páginas do frontend React: o Blade só entrega o shell da SPA
 Route::view('/', 'app')->name('home');
 Route::view('/blog', 'app')->name('blog');
+Route::view('/orcamento-site', 'app')->name('quote');

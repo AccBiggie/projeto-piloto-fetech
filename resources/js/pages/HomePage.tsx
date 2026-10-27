@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router';
 
 import About from '@/components/About';
-import ContactForm from '@/components/ContactForm';
 import Hero from '@/components/Hero';
 import Services from '@/components/Services';
 import { scrollToSection } from '@/navigation';
@@ -22,7 +21,6 @@ export default function HomePage() {
             <Hero />
             <Services />
             <About />
-            <ContactForm />
         </>
     );
 }

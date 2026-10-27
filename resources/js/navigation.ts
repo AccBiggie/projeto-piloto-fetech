@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { prefersReducedMotion } from '@/reveal/revealObserver';
 
 // Seções da home, na ordem da página. "inicio" é o topo.
-export const sections = ['inicio', 'servicos', 'sobre', 'contato'] as const;
+export const sections = ['inicio', 'servicos', 'sobre'] as const;
 export type SectionId = (typeof sections)[number];
 
 /** Seção de um link do menu ("/" -> inicio, "/#servicos" -> servicos); null para outras rotas. */

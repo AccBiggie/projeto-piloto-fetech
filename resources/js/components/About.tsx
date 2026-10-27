@@ -2,6 +2,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
+import { Link as RouterLink } from 'react-router';
 
 import FetechLogo from '@/components/FetechLogo';
 import SectionTitle from '@/components/SectionTitle';
@@ -31,7 +32,8 @@ export default function About() {
                         variant="outlined"
                         color="inherit"
                         size="large"
-                        href="#contato"
+                        component={RouterLink}
+                        to="/orcamento-site"
                         sx={{ borderColor: '#fff', '&:hover': { bgcolor: '#fff', color: brand.red } }}
                     >
                         Entre em contato

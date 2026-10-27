@@ -4,6 +4,7 @@ import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
+import { Link as RouterLink } from 'react-router';
 
 import { brand, monoFont } from '@/theme';
 
@@ -308,7 +309,8 @@ export default function Hero() {
                             variant="outlined"
                             color="inherit"
                             size="large"
-                            href="#contato"
+                            component={RouterLink}
+                            to="/orcamento-site"
                             sx={{ textTransform: 'uppercase', borderColor: '#fff', '&:hover': { bgcolor: '#fff', color: brand.red }, ...entrance(300) }}
                         >
                             Quero um orçamento

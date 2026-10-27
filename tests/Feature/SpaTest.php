@@ -25,6 +25,13 @@ class SpaTest extends TestCase
         $this->get('/blog')->assertOk();
     }
 
+    public function test_quote_page_renders_react_shell(): void
+    {
+        $this->get('/orcamento-site')
+            ->assertOk()
+            ->assertSee('<div id="root"></div>', false);
+    }
+
     public function test_old_home_url_redirects_permanently(): void
     {
         $this->get('/fetech/index')->assertRedirect('/')->assertStatus(301);
