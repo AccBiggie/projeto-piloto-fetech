@@ -14,35 +14,42 @@ import SectionTitle from '@/components/SectionTitle';
 import { useReveal } from '@/reveal/useReveal';
 import { brand } from '@/theme';
 
-// Desenvolvimento em primeiro lugar; o suporte técnico continua como serviço complementar
-const services = [
+// Desenvolvimento em primeiro lugar; o suporte técnico continua como serviço complementar.
+// O id é a âncora do card, usada também pelo submenu de Serviços do cabeçalho.
+export const services = [
     {
         Icon: LanguageOutlinedIcon,
+        id: 'criacao-de-sites',
         title: 'Criação de Sites',
         text: 'Sites institucionais e landing pages sob medida, rápidos, responsivos e prontos para o Google.',
     },
     {
         Icon: ShoppingCartOutlinedIcon,
+        id: 'loja-virtual',
         title: 'Loja Virtual',
         text: 'Venda seus produtos e serviços pela internet com uma loja completa, segura e fácil de administrar.',
     },
     {
         Icon: CodeOutlinedIcon,
+        id: 'sistema-web',
         title: 'Sistema Web',
         text: 'Sistemas personalizados que automatizam processos e atendem às necessidades únicas da sua empresa.',
     },
     {
         Icon: DnsOutlinedIcon,
+        id: 'hospedagem-de-sites',
         title: 'Hospedagem de Sites',
         text: 'Hospedagem e servidores configurados e monitorados para manter seu site sempre no ar.',
     },
     {
         Icon: AlternateEmailOutlinedIcon,
+        id: 'email-profissional',
         title: 'E-mail Profissional',
         text: 'Endereços de e-mail com o domínio da sua empresa, para se comunicar com mais credibilidade.',
     },
     {
         Icon: ImportantDevicesOutlinedIcon,
+        id: 'suporte-ti',
         title: 'Suporte e Soluções em TI',
         text: 'Diagnóstico e reparo de notebooks, desktops e televisores, com análise técnica e atendimento ágil.',
     },
@@ -59,6 +66,7 @@ export default function Services() {
                         <Grid key={service.title} size={{ xs: 12, sm: 6, lg: 4 }}>
                             <Box
                                 component="a"
+                                id={service.id}
                                 href="#contato"
                                 sx={{
                                     display: 'flex',
