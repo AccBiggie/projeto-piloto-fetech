@@ -38,7 +38,7 @@ export const navItems = [
     { label: 'Blog', to: '/blog' },
 ];
 
-const cta = { label: 'Orçamento', to: '/#contato' };
+export const cta = { label: 'Orçamento', to: '/orcamento-site' };
 
 // "Serviços" abre um submenu com âncoras para cada card da seção
 const servicesTo = '/#servicos';

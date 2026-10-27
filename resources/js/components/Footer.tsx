@@ -16,7 +16,7 @@ import { Link as RouterLink } from 'react-router';
 import AnimatedFetechLogo from '@/components/AnimatedFetechLogo';
 import FetechLogo from '@/components/FetechLogo';
 import { whatsappNumber, whatsappUrl } from '@/components/FloatingActions';
-import { navItems } from '@/components/Header';
+import { cta, navItems } from '@/components/Header';
 import { useReveal } from '@/reveal/useReveal';
 import { brand } from '@/theme';
 
@@ -27,7 +27,7 @@ const socials = [
     { label: 'Visite-nos no Facebook!', href: '#', icon: <FacebookIcon fontSize="small" /> },
 ];
 
-const menu = [...navItems.filter((item) => item.to !== '/'), { label: 'Orçamento', to: '/#contato' }];
+const menu = [...navItems.filter((item) => item.to !== '/'), cta];
 
 // (44) 99883-3731
 const whatsappLabel = whatsappNumber.replace(/^55(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');

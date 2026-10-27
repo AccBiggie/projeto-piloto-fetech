@@ -13,15 +13,18 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router';
 
 import App from '@/App';
+import ErrorBoundary from '@/components/ErrorBoundary';
 import { theme } from '@/theme';
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <BrowserRouter>
-                <App />
-            </BrowserRouter>
+            <ErrorBoundary>
+                <BrowserRouter>
+                    <App />
+                </BrowserRouter>
+            </ErrorBoundary>
         </ThemeProvider>
     </StrictMode>,
 );

@@ -6,14 +6,21 @@ export type ContactPayload = {
     website: string;
 };
 
-export type ContactResult =
+// Resposta dos formulários do site (contato e orçamento): mesma API, mesmos erros
+export type FormResult<P> =
     | { ok: true; message: string }
-    | { ok: false; message: string; errors?: Partial<Record<keyof ContactPayload, string[]>> };
+    | { ok: false; message: string; errors?: Partial<Record<keyof P, string[]>> };
 
-export async function sendContact(payload: ContactPayload): Promise<ContactResult> {
+export type ContactResult = FormResult<ContactPayload>;
+
+export function sendContact(payload: ContactPayload): Promise<ContactResult> {
+    return postForm('/api/contato', payload);
+}
+
+export async function postForm<P>(url: string, payload: P): Promise<FormResult<P>> {
     let response: Response;
     try {
-        response = await fetch('/api/contato', {
+        response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
             body: JSON.stringify(payload),
