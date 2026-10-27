@@ -12,14 +12,17 @@ export function sectionOf(to: string): SectionId | null {
     return (sections as readonly string[]).includes(id ?? '') ? (id as SectionId) : null;
 }
 
-/** Rola suavemente até a seção. O html tem scroll-padding-top com a altura do menu fixo. */
+/** Rola suavemente até a seção ou elemento. O html tem scroll-padding-top com a altura do menu fixo. */
 export function scrollToSection(id: string) {
     const behavior: ScrollBehavior = prefersReducedMotion() ? 'auto' : 'smooth';
     if (id === 'inicio') {
         window.scrollTo({ top: 0, behavior });
         return;
     }
-    document.getElementById(id)?.scrollIntoView({ behavior, block: 'start' });
+    // Seções alinham pelo topo; outros alvos (como os cards de serviço) ficam no centro da tela, o
+    // que também absorve o deslocamento da animação de entrada que o card ainda pode ter
+    const block: ScrollLogicalPosition = (sections as readonly string[]).includes(id) ? 'start' : 'center';
+    document.getElementById(id)?.scrollIntoView({ behavior, block });
 }
 
 // Marca no menu a seção que está sendo lida. Lê a posição direto no scroll (em vez de

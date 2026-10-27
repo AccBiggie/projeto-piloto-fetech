@@ -12,6 +12,7 @@
         "@emotion/styled": "^11.14.1",
         "@fontsource/bungee": "^5.3.0",
         "@fontsource/exo": "^5.3.0",
+        "@fontsource/source-code-pro": "^5.3.1",
         "@mui/icons-material": "^9.5.0",
         "@mui/material": "^9.5.0",
         "react": "^19.3.1",
