@@ -1,0 +1,101 @@
+# Produção (VPS). Uso: docker compose -f docker-compose.prod.yml up -d --build
+# Projeto Docker próprio ("fetech"): containers, volumes e banco separados dos outros projetos da VPS.
+# As variáveis vêm do .env ao lado deste arquivo (modelo em .env.production.example).
+# Nenhuma porta é publicada: o HTTPS fica no Caddy da VPS, que chega ao Nginx pela rede externa "proxy".
+name: fetech
+
+x-logging: &logging
+  driver: json-file
+  options: { max-size: 10m, max-file: "3" }
+
+services:
+  app:
+    build: { context: ., target: production }
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - storage:/var/www/html/storage
+    depends_on:
+      db: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    logging: *logging
+
+  web:
+    build: { context: ., target: web }
+    restart: unless-stopped
+    depends_on: [app]
+    networks:
+      default: {}
+      proxy:
+        # Nome pelo qual o Caddy encontra este site (único entre os projetos da VPS)
+        aliases: [fetech-web]
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/up"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    logging: *logging
+
+  db:
+    image: mysql:8.4
+    restart: unless-stopped
+    # VPS compartilhada: buffer pequeno deixa RAM para os outros projetos
+    command: ["--innodb-buffer-pool-size=256M"]
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:?defina DB_DATABASE no .env}
+      MYSQL_USER: ${DB_USERNAME:?defina DB_USERNAME no .env}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?defina DB_PASSWORD no .env}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?defina DB_ROOT_PASSWORD no .env}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      # TCP (127.0.0.1): na primeira inicialização o MySQL sobe antes um servidor temporário só no socket
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    logging: *logging
+
+  redis:
+    image: redis:8-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--save", "", "--appendonly", "no", "--maxmemory", "128mb", "--maxmemory-policy", "allkeys-lru"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    logging: *logging
+
+  # Backup diário do banco em ./backups (mantém 14 dias)
+  backup:
+    image: mysql:8.4
+    restart: unless-stopped
+    depends_on:
+      db: { condition: service_healthy }
+    environment:
+      MYSQL_PWD: ${DB_ROOT_PASSWORD:?defina DB_ROOT_PASSWORD no .env}
+      DB_DATABASE: ${DB_DATABASE:?defina DB_DATABASE no .env}
+    volumes: ["./backups:/backups"]
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        while true; do
+          mysqldump -h db -uroot --single-transaction --routines "$$DB_DATABASE" | gzip > "/backups/fetech-$$(date +%F).sql.gz" && echo "backup ok $$(date)"
+          find /backups -name 'fetech-*.sql.gz' -mtime +14 -delete
+          sleep 86400
+        done
+    logging: *logging
+
+networks:
+  default: {}
+  # Rede compartilhada com o Caddy da VPS (criada por deploy/setup-vps.sh)
+  proxy:
+    external: true
+    name: proxy
+
+volumes:
+  mysql_data:
+  storage:

@@ -1,0 +1,11 @@
+# Site do Fetech no Caddy da VPS. O deploy troca __DOMAIN__ pelo APP_DOMAIN do .env
+# e grava o resultado em /opt/caddy-sites/fetech.caddy, importado pelo Caddyfile principal.
+# CSP e demais headers de segurança vêm do Laravel e do Nginx.
+__DOMAIN__ {
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		-Server
+	}
+	reverse_proxy fetech-web:80
+}

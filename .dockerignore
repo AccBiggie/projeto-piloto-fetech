@@ -1,8 +1,21 @@
 .git
+.github
 node_modules
 vendor
 public/build
 public/hot
-storage/logs
-storage/framework
+backups
+deploy
 .env
+.env.*
+!.env.example
+!.env.production.example
+
+# Mantém a estrutura de storage/ (com os .gitignore), sem logs, caches e sessões locais
+storage/logs/*
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/testing/*
+storage/framework/views/*
+!storage/**/.gitignore
+bootstrap/cache/*.php

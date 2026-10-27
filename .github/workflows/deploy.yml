@@ -1,0 +1,47 @@
+# Deploy na VPS a cada merge na branch production (ou manual, em Actions > Deploy > Run workflow).
+# Segredos do repositório: VPS_HOST, VPS_USER (fetech), VPS_SSH_KEY (chave privada do CI do Fetech),
+# VPS_KNOWN_HOSTS (saída de  ssh-keyscan -t ed25519 <host> ) e, opcional, VPS_PORT.
+# Variável do repositório: SITE_URL (ex.: https://seu-dominio.com.br).
+name: Deploy
+
+on:
+  push:
+    branches: [production]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-fetech-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy na VPS
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Chave SSH
+        env:
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/id_deploy && chmod 600 ~/.ssh/id_deploy
+          printf '%s\n' "$VPS_KNOWN_HOSTS" > ~/.ssh/known_hosts
+      - name: Atualizar e subir a versão da production
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_PORT: ${{ secrets.VPS_PORT || '22' }}
+        # Atualiza o código (descartando alterações manuais na VPS) antes de chamar o script.
+        run: ssh -i ~/.ssh/id_deploy -p "$VPS_PORT" -o BatchMode=yes "$VPS_USER@$VPS_HOST" 'cd /opt/fetech && git fetch -q origin production && git checkout -q -f -B production origin/production && bash deploy/deploy.sh'
+      - name: Conferir o site no ar
+        if: vars.SITE_URL != ''
+        run: |
+          for _ in $(seq 1 20); do
+            curl -fsS "${{ vars.SITE_URL }}/up" >/dev/null && { echo "Site no ar."; exit 0; }
+            sleep 6
+          done
+          echo "::error::${{ vars.SITE_URL }}/up não respondeu."; exit 1
