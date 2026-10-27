@@ -106,7 +106,7 @@ export default function Hero() {
                     </Grid>
                     <Grid size={{ xs: 12, md: 6 }} sx={{ textAlign: 'right' }}>
                         <Typography variant="h2" component="h1" sx={{ fontSize: { xs: 30, md: 50 }, lineHeight: 1.2, mb: 3, ...entrance(0) }}>
-                            Assistência técnica e soluções em TI para você e sua empresa.
+                            Criamos, desenvolvemos e entregamos soluções em tecnologia para o seu negócio.
                         </Typography>
                         <Button
                             variant="outlined"
@@ -115,7 +115,7 @@ export default function Hero() {
                             href="#contato"
                             sx={{ textTransform: 'uppercase', borderColor: '#fff', '&:hover': { bgcolor: '#fff', color: brand.red }, ...entrance(120) }}
                         >
-                            Solicite seu orçamento
+                            Quero um orçamento
                         </Button>
                     </Grid>
                 </Grid>

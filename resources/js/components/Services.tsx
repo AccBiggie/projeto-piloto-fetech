@@ -1,4 +1,10 @@
+import AlternateEmailOutlinedIcon from '@mui/icons-material/AlternateEmailOutlined';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import CodeOutlinedIcon from '@mui/icons-material/CodeOutlined';
+import DnsOutlinedIcon from '@mui/icons-material/DnsOutlined';
+import ImportantDevicesOutlinedIcon from '@mui/icons-material/ImportantDevicesOutlined';
+import LanguageOutlinedIcon from '@mui/icons-material/LanguageOutlined';
+import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
@@ -8,26 +14,37 @@ import SectionTitle from '@/components/SectionTitle';
 import { useReveal } from '@/reveal/useReveal';
 import { brand } from '@/theme';
 
+// Desenvolvimento em primeiro lugar; o suporte técnico continua como serviço complementar
 const services = [
     {
-        image: '/assets/logos/destaque1.svg',
-        title: 'Soluções em TI',
-        text: 'A Fetech Informática atende você por diversas formas, assistência técnica, suprimentos de TI e consultorias.',
+        Icon: LanguageOutlinedIcon,
+        title: 'Criação de Sites',
+        text: 'Sites institucionais e landing pages sob medida, rápidos, responsivos e prontos para o Google.',
     },
     {
-        image: '/assets/logos/destaque2.svg',
-        title: 'Notebooks, desktop e televisores',
-        text: 'Temos uma equipe especializada em análises técnicas para reparar seu equipamento em tempo ágil.',
+        Icon: ShoppingCartOutlinedIcon,
+        title: 'Loja Virtual',
+        text: 'Venda seus produtos e serviços pela internet com uma loja completa, segura e fácil de administrar.',
     },
     {
-        image: '/assets/logos/destaque3.svg',
-        title: 'Solicite seu orçamento',
-        text: 'Os produtos enviados para a Fetech irão passar por uma análise do defeito para solucionar o seu problema.',
+        Icon: CodeOutlinedIcon,
+        title: 'Sistema Web',
+        text: 'Sistemas personalizados que automatizam processos e atendem às necessidades únicas da sua empresa.',
     },
     {
-        image: '/assets/logos/destaque4.svg',
-        title: 'Os melhores preços!',
-        text: 'Montamos o seu computador de acordo com a sua necessidade, entre em contato e solicite o seu orçamento.',
+        Icon: DnsOutlinedIcon,
+        title: 'Hospedagem de Sites',
+        text: 'Hospedagem e servidores configurados e monitorados para manter seu site sempre no ar.',
+    },
+    {
+        Icon: AlternateEmailOutlinedIcon,
+        title: 'E-mail Profissional',
+        text: 'Endereços de e-mail com o domínio da sua empresa, para se comunicar com mais credibilidade.',
+    },
+    {
+        Icon: ImportantDevicesOutlinedIcon,
+        title: 'Suporte e Soluções em TI',
+        text: 'Diagnóstico e reparo de notebooks, desktops e televisores, com análise técnica e atendimento ágil.',
     },
 ];
 
@@ -39,7 +56,7 @@ export default function Services() {
                 <SectionTitle>Serviços</SectionTitle>
                 <Grid container spacing={2} {...cards}>
                     {services.map((service) => (
-                        <Grid key={service.title} size={{ xs: 12, sm: 6, lg: 3 }}>
+                        <Grid key={service.title} size={{ xs: 12, sm: 6, lg: 4 }}>
                             <Box
                                 component="a"
                                 href="#contato"
@@ -63,7 +80,7 @@ export default function Services() {
                                     '&:hover .saiba-mais, &:focus-visible .saiba-mais': { opacity: 1 },
                                 }}
                             >
-                                <Box component="img" src={service.image} alt="" sx={{ width: 96, height: 96, objectFit: 'contain', mb: 2 }} />
+                                <service.Icon aria-hidden="true" sx={{ fontSize: 64, color: brand.red, mb: 2 }} />
                                 <Typography variant="h6" component="h3" sx={{ fontSize: 20, mb: 1.5 }}>
                                     {service.title}
                                 </Typography>
