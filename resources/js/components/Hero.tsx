@@ -56,9 +56,9 @@ const entrance = (delay: number) => ({ animation: `${heroIn} .7s cubic-bezier(.2
 
 const tagline = 'Professional Hardware and Technology';
 
-// A tagline se digita ao carregar e de novo a cada 3 min: digita em 1,6 s, fica parada e, no fim
+// A tagline se digita ao carregar e de novo a cada 1 min: digita em 1,6 s, fica parada e, no fim
 // do ciclo, se apaga em 1,8 s para recomeçar. O steps() vale para cada trecho entre os quadros.
-const typingCycle = 180;
+const typingCycle = 60;
 const typedAt = (1.6 / typingCycle) * 100;
 const erasingAt = 100 - (1.8 / typingCycle) * 100;
 const typing = keyframes`
