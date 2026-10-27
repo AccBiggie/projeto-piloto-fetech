@@ -1,4 +1,3 @@
-import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import SendIcon from '@mui/icons-material/Send';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
@@ -12,6 +11,7 @@ import Typography from '@mui/material/Typography';
 import { type FormEvent, useState } from 'react';
 
 import { type ContactPayload, type ContactResult, sendContact } from '@/api/contact';
+import SectionTitle from '@/components/SectionTitle';
 import { brand } from '@/theme';
 
 const emptyForm: ContactPayload = { name: '', email: '', subject: '', message: '', website: '' };
@@ -22,15 +22,6 @@ const fields: { name: Exclude<keyof ContactPayload, 'website'>; label: string; t
     { name: 'subject', label: 'Assunto', max: 150 },
     { name: 'message', label: 'Mensagem', max: 2000, multiline: true },
 ];
-
-// Campos claros sobre o fundo verde-água da seção
-const inputSx = {
-    '& .MuiInputBase-root': { color: '#fff' },
-    '& .MuiInputLabel-root, & .MuiInputLabel-root.Mui-focused': { color: '#fff' },
-    '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,.7)' },
-    '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#fff' },
-    '& .MuiFormHelperText-root': { color: '#fff' },
-};
 
 export default function ContactForm() {
     const [form, setForm] = useState(emptyForm);
@@ -51,14 +42,14 @@ export default function ContactForm() {
     }
 
     return (
-        <Box component="section" id="contato" sx={{ py: 6, scrollMarginTop: 80 }}>
+        <Box component="section" id="contato" sx={{ bgcolor: brand.sectionAlt, py: { xs: 8, md: 12.5 }, scrollMarginTop: 64 }}>
             <Container maxWidth="lg">
-                <Paper elevation={3} sx={{ bgcolor: brand.teal, color: '#fff', p: { xs: 3, md: 8 }, position: 'relative' }}>
-                    <EmailOutlinedIcon sx={{ position: 'absolute', top: 24, left: 24, fontSize: 48, display: { xs: 'none', sm: 'block' } }} />
-                    <Typography variant="h4" component="h2" sx={{ textAlign: 'center', mb: 1 }}>
+                <SectionTitle>Contato</SectionTitle>
+                <Paper elevation={0} sx={{ border: `1px solid ${brand.section}`, borderRadius: 2.5, p: { xs: 3, md: 6 } }}>
+                    <Typography variant="h5" component="p" sx={{ textAlign: 'center', mb: 1 }}>
                         Entre em contato conosco!
                     </Typography>
-                    <Typography variant="h6" component="p" sx={{ textAlign: 'center', fontWeight: 400, mb: 4 }}>
+                    <Typography sx={{ textAlign: 'center', opacity: 0.6, mb: 4 }}>
                         Para solicitar nossos serviços ou orçamentos.
                     </Typography>
 
@@ -79,7 +70,6 @@ export default function ContactForm() {
                                     error={Boolean(errors?.[field.name])}
                                     helperText={errors?.[field.name]?.[0]}
                                     slotProps={{ htmlInput: { maxLength: field.max } }}
-                                    sx={inputSx}
                                 />
                             ))}
 

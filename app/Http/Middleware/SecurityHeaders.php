@@ -31,11 +31,13 @@ class SecurityHeaders
         $nonce = Vite::cspNonce();
         $scripts = ["'self'", "'nonce-{$nonce}'"];
         $connect = ["'self'"];
+        $fonts = ["'self'", 'data:'];
 
-        // Em desenvolvimento os scripts vêm do servidor do Vite (HMR)
+        // Em desenvolvimento os scripts e as fontes vêm do servidor do Vite (HMR)
         if (Vite::isRunningHot()) {
             $hot = rtrim(file_get_contents(Vite::hotFile()));
             $scripts[] = $hot;
+            $fonts[] = $hot;
             $connect[] = $hot;
             $connect[] = preg_replace('#^http#', 'ws', $hot);
         }
@@ -46,7 +48,7 @@ class SecurityHeaders
             // O Emotion (MUI) injeta <style> em tempo de execução
             "style-src 'self' 'unsafe-inline'",
             "img-src 'self' data:",
-            "font-src 'self' data:",
+            'font-src '.implode(' ', $fonts),
             'connect-src '.implode(' ', $connect),
             "object-src 'none'",
             "base-uri 'self'",
