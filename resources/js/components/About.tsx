@@ -16,15 +16,15 @@ export default function About() {
                 <SectionTitle>Sobre</SectionTitle>
                 <Box {...content} sx={{ maxWidth: 820, mx: 'auto', textAlign: 'center' }}>
                     <Typography variant="h4" component="p" sx={{ fontSize: { xs: 24, md: 32 }, mb: 3 }}>
-                        Unindo arte em hardware e tecnologia
+                        Tecnologia sob medida, do código ao equipamento
                     </Typography>
                     <Typography sx={{ fontSize: 18, opacity: 0.8, mb: 2 }}>
-                        Estamos a um ano no mercado de trabalho buscando inovações e implementando melhores soluções para sua
-                        empresa.
+                        A Fetech desenvolve sites, lojas virtuais e sistemas web pensados para a realidade de cada cliente, do
+                        planejamento à entrega, com hospedagem e e-mail profissional para colocar tudo no ar.
                     </Typography>
                     <Typography sx={{ fontSize: 18, opacity: 0.8, mb: 4 }}>
-                        A Fetech Informatica surgiu com a necessidade de fornecer serviços de TI e consultorias técnicas para
-                        atender a toda a demanda do mercado da tecnologia.
+                        Nascemos da assistência técnica e seguimos especializados em soluções de TI: diagnosticamos e
+                        resolvemos problemas em notebooks, desktops e televisores com agilidade.
                     </Typography>
                     <FetechLogo sx={{ width: 160, height: 'auto', aspectRatio: '200 / 55', display: 'block', mx: 'auto', mb: 4 }} />
                     <Button

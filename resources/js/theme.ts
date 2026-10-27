@@ -20,12 +20,14 @@ export const brand = {
     footerText: '#8f8f8f',
     footerIcon: '#4e4949',
     copyright: '#191919',
+    // Grafite do wallpaper original da Fetech, fundo do topo da home
+    graphite: '#1c1c1f',
+    graphiteLight: '#2c2b2e',
 };
 
-// Degradê vertical do topo e das figuras geométricas
-export const brandGradient = `linear-gradient(180deg, ${brand.redDark} 0%, ${brand.red} 100%)`;
-
 export const titleFont = '"Bungee", "Exo", sans-serif';
+// Fonte da tagline "Professional Hardware and Technology" no site original
+export const monoFont = '"Source Code Pro", ui-monospace, monospace';
 
 export const theme = createTheme({
     palette: {

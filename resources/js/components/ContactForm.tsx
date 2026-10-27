@@ -49,10 +49,11 @@ export default function ContactForm() {
                 <SectionTitle>Contato</SectionTitle>
                 <Paper {...card} elevation={0} sx={{ border: `1px solid ${brand.section}`, borderRadius: 2.5, p: { xs: 3, md: 6 } }}>
                     <Typography variant="h5" component="p" sx={{ textAlign: 'center', mb: 1 }}>
-                        Entre em contato conosco!
+                        Vamos tirar sua ideia do papel?
                     </Typography>
                     <Typography sx={{ textAlign: 'center', opacity: 0.6, mb: 4 }}>
-                        Para solicitar nossos serviços ou orçamentos.
+                        Conte o que você precisa, seja um novo projeto ou um equipamento com defeito, e retornamos com um
+                        orçamento.
                     </Typography>
 
                     <Box component="form" onSubmit={handleSubmit} noValidate sx={{ maxWidth: 640, mx: 'auto' }}>
