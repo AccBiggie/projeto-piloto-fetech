@@ -29,6 +29,7 @@ export const services = [
     {
         Icon: ShoppingCartOutlinedIcon,
         id: 'loja-virtual',
+        page: '/loja-virtual',
         title: 'Loja Virtual',
         text: 'Venda seus produtos e serviços pela internet com uma loja completa, segura e fácil de administrar.',
     },
