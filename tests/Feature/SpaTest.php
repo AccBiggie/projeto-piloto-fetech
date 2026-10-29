@@ -39,6 +39,13 @@ class SpaTest extends TestCase
             ->assertSee('<div id="root"></div>', false);
     }
 
+    public function test_store_page_renders_react_shell(): void
+    {
+        $this->get('/loja-virtual')
+            ->assertOk()
+            ->assertSee('<div id="root"></div>', false);
+    }
+
     public function test_old_home_url_redirects_permanently(): void
     {
         $this->get('/fetech/index')->assertRedirect('/')->assertStatus(301);

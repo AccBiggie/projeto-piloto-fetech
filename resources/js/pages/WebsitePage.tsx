@@ -3,16 +3,12 @@ import AlternateEmailOutlinedIcon from '@mui/icons-material/AlternateEmailOutlin
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import BrushOutlinedIcon from '@mui/icons-material/BrushOutlined';
 import DashboardCustomizeOutlinedIcon from '@mui/icons-material/DashboardCustomizeOutlined';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import LaptopMacOutlinedIcon from '@mui/icons-material/LaptopMacOutlined';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import PhoneIphoneOutlinedIcon from '@mui/icons-material/PhoneIphoneOutlined';
 import TabletMacOutlinedIcon from '@mui/icons-material/TabletMacOutlined';
 import TravelExploreOutlinedIcon from '@mui/icons-material/TravelExploreOutlined';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
-import Accordion from '@mui/material/Accordion';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -21,29 +17,17 @@ import Stack from '@mui/material/Stack';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link as RouterLink } from 'react-router';
 
 import { whatsappUrl } from '@/components/FloatingActions';
+import { ease, entrance, type FaqItem, graphiteGlow, noMotion, ServiceCta, ServiceFaq, ServicePrompt, usePageTitle } from '@/components/ServiceSections';
 import SectionTitle from '@/components/SectionTitle';
 import { useReveal } from '@/reveal/useReveal';
 import { brand, monoFont } from '@/theme';
 
 // Página do serviço de criação de sites: o que vem incluso, o site em cada tela, as etapas do
 // projeto e as dúvidas mais comuns, sempre levando ao orçamento.
-
-const ease = 'cubic-bezier(.22,.61,.36,1)';
-const noMotion = { '@media (prefers-reduced-motion: reduce)': { animation: 'none' } };
-
-const heroIn = keyframes`
-    from { opacity: 0; transform: translate3d(0, 8px, 0); }
-    to { opacity: 1; transform: none; }
-`;
-const entrance = (delay: number) => ({ animation: `${heroIn} .7s ${ease} ${delay}ms both`, ...noMotion });
-
-const caret = keyframes`
-    50% { opacity: 0; }
-`;
 
 // Os blocos do site em construção vão sendo "montados" no mockup do topo
 const build = keyframes`
@@ -98,7 +82,7 @@ const steps = [
     { title: 'No ar', text: 'Publicamos no seu domínio, configuramos os e-mails e seguimos dando suporte.' },
 ];
 
-const faq = [
+const faq: FaqItem[] = [
     {
         q: 'Quanto tempo leva para o site ficar pronto?',
         a: 'Um site institucional costuma levar de 2 a 4 semanas, contando a aprovação do protótipo. Projetos com mais páginas ou integrações têm o prazo definido no orçamento.',
@@ -188,7 +172,7 @@ function WebsiteHero() {
                 position: 'relative',
                 overflow: 'hidden',
                 color: '#fff',
-                background: `radial-gradient(70% 70% at 100% 0%, rgba(224,20,59,.45), transparent 70%), linear-gradient(160deg, ${brand.graphiteLight}, ${brand.graphite} 60%)`,
+                background: graphiteGlow('100% 0%'),
                 pt: { xs: 8, md: 12 },
                 pb: { xs: 8, md: 12 },
             }}
@@ -196,17 +180,7 @@ function WebsiteHero() {
             <Container maxWidth="lg">
                 <Grid container spacing={6} sx={{ alignItems: 'center' }}>
                     <Grid size={{ xs: 12, md: 6 }}>
-                        <Typography sx={{ fontFamily: monoFont, fontSize: { xs: 13, md: 15 }, color: 'rgba(255,255,255,.75)', mb: 2, ...entrance(0) }}>
-                            <Box component="span" aria-hidden="true" sx={{ color: brand.red }}>
-                                {'>'}
-                            </Box>{' '}
-                            servicos/criacao-de-sites
-                            <Box
-                                component="span"
-                                aria-hidden="true"
-                                sx={{ display: 'inline-block', width: '.6ch', height: '1.1em', ml: '.3ch', verticalAlign: 'text-bottom', bgcolor: brand.red, animation: `${caret} 1s step-end infinite`, ...noMotion }}
-                            />
-                        </Typography>
+                        <ServicePrompt path="servicos/criacao-de-sites" />
                         <Typography variant="h2" component="h1" sx={{ fontSize: { xs: 32, md: 50 }, lineHeight: 1.15, mb: 2.5, ...entrance(150) }}>
                             Um site com a cara da sua empresa, do rascunho ao <Box component="span" sx={{ color: brand.red }}>ar</Box>.
                         </Typography>
@@ -457,81 +431,8 @@ function Process() {
     );
 }
 
-function Faq() {
-    const items = useReveal({ stagger: true, preset: 'fade', delay: 60 });
-    const [open, setOpen] = useState<number | false>(0);
-    return (
-        <Box component="section" sx={{ bgcolor: brand.section, py: { xs: 8, md: 12.5 } }}>
-            <Container maxWidth="md">
-                <SectionTitle>Dúvidas frequentes</SectionTitle>
-                <Box {...items}>
-                    {faq.map((item, index) => (
-                        <Accordion
-                            key={item.q}
-                            disableGutters
-                            elevation={0}
-                            expanded={open === index}
-                            onChange={(_, expanded) => setOpen(expanded ? index : false)}
-                            sx={{
-                                mb: 1.5,
-                                borderRadius: '10px !important',
-                                border: `1px solid ${open === index ? brand.red : 'transparent'}`,
-                                transition: `border-color .3s ${ease}`,
-                                '&::before': { display: 'none' },
-                            }}
-                        >
-                            <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: brand.red }} />} sx={{ px: 3, py: 0.5 }}>
-                                <Typography component="h3" sx={{ fontWeight: 600, fontSize: 17 }}>
-                                    {item.q}
-                                </Typography>
-                            </AccordionSummary>
-                            <AccordionDetails sx={{ px: 3, pb: 3, pt: 0 }}>
-                                <Typography sx={{ color: brand.ink }}>{item.a}</Typography>
-                            </AccordionDetails>
-                        </Accordion>
-                    ))}
-                </Box>
-            </Container>
-        </Box>
-    );
-}
-
-function FinalCta() {
-    const content = useReveal({ stagger: true, preset: 'fade', delay: 80 });
-    return (
-        <Box component="section" sx={{ bgcolor: brand.red, color: '#fff', py: { xs: 8, md: 10 } }}>
-            <Container maxWidth="md">
-                <Box {...content} sx={{ textAlign: 'center' }}>
-                    <Typography sx={{ fontFamily: monoFont, opacity: 0.8, mb: 1.5 }}>{'> pronto para começar?'}</Typography>
-                    <Typography variant="h4" component="h2" sx={{ fontSize: { xs: 26, md: 36 }, mb: 2 }}>
-                        Responda algumas perguntas e receba um orçamento sob medida.
-                    </Typography>
-                    <Typography sx={{ fontSize: 18, opacity: 0.85, mb: 4 }}>Leva menos de 3 minutos e não tem compromisso.</Typography>
-                    <Button
-                        variant="outlined"
-                        color="inherit"
-                        size="large"
-                        component={RouterLink}
-                        to="/orcamento-site"
-                        endIcon={<ArrowForwardIcon />}
-                        sx={{ borderColor: '#fff', '&:hover': { bgcolor: '#fff', color: brand.red } }}
-                    >
-                        Quero meu orçamento
-                    </Button>
-                </Box>
-            </Container>
-        </Box>
-    );
-}
-
 export default function WebsitePage() {
-    useEffect(() => {
-        const previous = document.title;
-        document.title = 'Criação de Sites – Fetech';
-        return () => {
-            document.title = previous;
-        };
-    }, []);
+    usePageTitle('Criação de Sites – Fetech');
 
     return (
         <>
@@ -539,8 +440,13 @@ export default function WebsitePage() {
             <Included />
             <Responsive />
             <Process />
-            <Faq />
-            <FinalCta />
+            <ServiceFaq items={faq} />
+            <ServiceCta
+                prompt="pronto para começar?"
+                title="Responda algumas perguntas e receba um orçamento sob medida."
+                text="Leva menos de 3 minutos e não tem compromisso."
+                button="Quero meu orçamento"
+            />
         </>
     );
 }
