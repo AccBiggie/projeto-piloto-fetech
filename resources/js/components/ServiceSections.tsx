@@ -112,9 +112,11 @@ interface ServiceCtaProps {
     title: string;
     text: string;
     button: string;
+    /** Link externo do botão (como o WhatsApp); sem ele, o botão leva ao orçamento de site */
+    href?: string;
 }
 
-export function ServiceCta({ prompt, title, text, button }: ServiceCtaProps) {
+export function ServiceCta({ prompt, title, text, button, href }: ServiceCtaProps) {
     const content = useReveal({ stagger: true, preset: 'fade', delay: 80 });
     return (
         <Box component="section" sx={{ bgcolor: brand.red, color: '#fff', py: { xs: 8, md: 10 } }}>
@@ -129,8 +131,7 @@ export function ServiceCta({ prompt, title, text, button }: ServiceCtaProps) {
                         variant="outlined"
                         color="inherit"
                         size="large"
-                        component={RouterLink}
-                        to="/orcamento-site"
+                        {...(href ? { href, target: '_blank', rel: 'noopener noreferrer' } : { component: RouterLink, to: '/orcamento-site' })}
                         endIcon={<ArrowForwardIcon />}
                         sx={{ borderColor: '#fff', '&:hover': { bgcolor: '#fff', color: brand.red } }}
                     >
