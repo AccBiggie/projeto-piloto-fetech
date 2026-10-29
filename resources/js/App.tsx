@@ -13,6 +13,7 @@ import NotFoundPage from '@/pages/NotFoundPage';
 import PostPage from '@/pages/PostPage';
 import QuotePage from '@/pages/QuotePage';
 import StorePage from '@/pages/StorePage';
+import SupportPage from '@/pages/SupportPage';
 import WebsitePage from '@/pages/WebsitePage';
 
 // O orçamento abre sozinho: só o formulário e um cabeçalho para voltar ao site
@@ -34,6 +35,7 @@ export default function App() {
                     <Route path="/criacao-de-sites" element={<WebsitePage />} />
                     <Route path="/loja-virtual" element={<StorePage />} />
                     <Route path="/email-profissional" element={<EmailPage />} />
+                    <Route path="/suporte-ti" element={<SupportPage />} />
                     <Route path="*" element={<NotFoundPage />} />
                 </Routes>
             </Box>
