@@ -48,6 +48,7 @@ export const services = [
     {
         Icon: AlternateEmailOutlinedIcon,
         id: 'email-profissional',
+        page: '/email-profissional',
         title: 'E-mail Profissional',
         text: 'Endereços de e-mail com o domínio da sua empresa, para se comunicar com mais credibilidade.',
     },
