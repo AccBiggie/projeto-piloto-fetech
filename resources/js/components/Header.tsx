@@ -71,9 +71,10 @@ export default function Header() {
     const overHero = pathname === '/';
     const solid = scrolled || !overHero;
 
-    // Na home o item ativo segue a seção na tela; nas outras páginas, a rota
+    // Na home o item ativo segue a seção na tela; nas outras páginas, a rota (um post em
+    // /blog/<slug> mantém o Blog marcado)
     const section = useActiveSection(overHero);
-    const isActive = (to: string) => (overHero ? sectionOf(to) === section : to === pathname);
+    const isActive = (to: string) => (overHero ? sectionOf(to) === section : to === pathname || pathname.startsWith(`${to}/`));
 
     // Na home os itens rolam suave até a seção (ou o card de serviço); fora dela, o router navega e
     // a home rola ao abrir
