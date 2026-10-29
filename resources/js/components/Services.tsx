@@ -16,11 +16,13 @@ import { useReveal } from '@/reveal/useReveal';
 import { brand } from '@/theme';
 
 // Desenvolvimento em primeiro lugar; o suporte técnico continua como serviço complementar.
-// O id é a âncora do card, usada também pelo submenu de Serviços do cabeçalho.
+// O id é a âncora do card, usada também pelo submenu de Serviços do cabeçalho. Serviços com página
+// própria (page) levam a ela; os demais, ao orçamento.
 export const services = [
     {
         Icon: LanguageOutlinedIcon,
         id: 'criacao-de-sites',
+        page: '/criacao-de-sites',
         title: 'Criação de Sites',
         text: 'Sites institucionais e landing pages sob medida, rápidos, responsivos e prontos para o Google.',
     },
@@ -137,7 +139,7 @@ export default function Services() {
                 <Grid container spacing={2} {...cards}>
                     {services.map((service) => (
                         <Grid key={service.title} size={{ xs: 12, sm: 6, lg: 4 }}>
-                            <Box component={RouterLink} id={service.id} to="/orcamento-site" sx={cardSx}>
+                            <Box component={RouterLink} id={service.id} to={service.page ?? '/orcamento-site'} sx={cardSx}>
                                 <Box className="icone" sx={iconSx}>
                                     <service.Icon aria-hidden="true" sx={{ fontSize: 48 }} />
                                 </Box>

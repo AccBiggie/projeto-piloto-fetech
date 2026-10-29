@@ -40,9 +40,9 @@ export const navItems = [
 
 export const cta = { label: 'Orçamento', to: '/orcamento-site' };
 
-// "Serviços" abre um submenu com âncoras para cada card da seção
+// "Serviços" abre um submenu com a página de cada serviço ou, sem página, a âncora do card na seção
 const servicesTo = '/#servicos';
-const serviceLinks = services.map((service) => ({ label: service.title, to: `/#${service.id}`, Icon: service.Icon }));
+const serviceLinks = services.map((service) => ({ label: service.title, to: service.page ?? `/#${service.id}`, Icon: service.Icon }));
 
 const servicesItemSx = { py: 1.25, '&:hover, &.Mui-focusVisible': { bgcolor: 'rgba(224,20,59,.18)' } } as const;
 
