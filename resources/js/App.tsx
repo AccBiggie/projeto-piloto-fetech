@@ -7,6 +7,7 @@ import FloatingActions from '@/components/FloatingActions';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import BlogPage from '@/pages/BlogPage';
+import EmailPage from '@/pages/EmailPage';
 import HomePage from '@/pages/HomePage';
 import NotFoundPage from '@/pages/NotFoundPage';
 import QuotePage from '@/pages/QuotePage';
@@ -30,6 +31,7 @@ export default function App() {
                     <Route path="/orcamento-site" element={<QuotePage />} />
                     <Route path="/criacao-de-sites" element={<WebsitePage />} />
                     <Route path="/loja-virtual" element={<StorePage />} />
+                    <Route path="/email-profissional" element={<EmailPage />} />
                     <Route path="*" element={<NotFoundPage />} />
                 </Routes>
             </Box>
