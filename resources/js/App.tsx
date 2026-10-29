@@ -10,6 +10,7 @@ import BlogPage from '@/pages/BlogPage';
 import EmailPage from '@/pages/EmailPage';
 import HomePage from '@/pages/HomePage';
 import NotFoundPage from '@/pages/NotFoundPage';
+import PostPage from '@/pages/PostPage';
 import QuotePage from '@/pages/QuotePage';
 import StorePage from '@/pages/StorePage';
 import WebsitePage from '@/pages/WebsitePage';
@@ -28,6 +29,7 @@ export default function App() {
                 <Routes>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/blog" element={<BlogPage />} />
+                    <Route path="/blog/:slug" element={<PostPage />} />
                     <Route path="/orcamento-site" element={<QuotePage />} />
                     <Route path="/criacao-de-sites" element={<WebsitePage />} />
                     <Route path="/loja-virtual" element={<StorePage />} />

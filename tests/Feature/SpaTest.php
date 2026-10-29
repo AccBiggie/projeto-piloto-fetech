@@ -25,6 +25,13 @@ class SpaTest extends TestCase
         $this->get('/blog')->assertOk();
     }
 
+    public function test_blog_post_renders_react_shell(): void
+    {
+        $this->get('/blog/primeiro-post')
+            ->assertOk()
+            ->assertSee('<div id="root"></div>', false);
+    }
+
     public function test_quote_page_renders_react_shell(): void
     {
         $this->get('/orcamento-site')
