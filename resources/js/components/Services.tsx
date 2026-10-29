@@ -55,6 +55,7 @@ export const services = [
     {
         Icon: ImportantDevicesOutlinedIcon,
         id: 'suporte-ti',
+        page: '/suporte-ti',
         title: 'Suporte e Soluções em TI',
         text: 'Diagnóstico e reparo de notebooks, desktops e televisores, com análise técnica e atendimento ágil.',
     },
