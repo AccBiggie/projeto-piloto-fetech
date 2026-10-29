@@ -10,6 +10,7 @@ import BlogPage from '@/pages/BlogPage';
 import HomePage from '@/pages/HomePage';
 import NotFoundPage from '@/pages/NotFoundPage';
 import QuotePage from '@/pages/QuotePage';
+import WebsitePage from '@/pages/WebsitePage';
 
 // O orçamento abre sozinho: só o formulário e um cabeçalho para voltar ao site
 const formPages = ['/orcamento-site'];
@@ -26,6 +27,7 @@ export default function App() {
                     <Route path="/" element={<HomePage />} />
                     <Route path="/blog" element={<BlogPage />} />
                     <Route path="/orcamento-site" element={<QuotePage />} />
+                    <Route path="/criacao-de-sites" element={<WebsitePage />} />
                     <Route path="*" element={<NotFoundPage />} />
                 </Routes>
             </Box>
