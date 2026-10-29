@@ -13,3 +13,4 @@ Route::view('/orcamento-site', 'app')->name('quote');
 Route::view('/criacao-de-sites', 'app')->name('websites');
 Route::view('/loja-virtual', 'app')->name('store');
 Route::view('/email-profissional', 'app')->name('email');
+Route::view('/suporte-ti', 'app')->name('support');
