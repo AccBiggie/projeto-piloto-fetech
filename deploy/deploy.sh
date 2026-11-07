@@ -37,7 +37,12 @@ if [ -z "$healthy" ]; then
 fi
 
 # Registra o domínio no Caddy compartilhado e recarrega sem derrubar os outros sites.
-sed "s/__DOMAIN__/$DOMAIN/g" deploy/caddy/fetech.caddy > "$SITES_DIR/fetech.caddy.new"
+# Com APP_DOMAIN em "www.", o domínio sem "www" redireciona para ele; caso contrário, o bloco sai.
+if [[ "$DOMAIN" == www.* ]]; then
+  sed -e "s/__APEX_DOMAIN__/${DOMAIN#www.}/g" -e "s/__DOMAIN__/$DOMAIN/g" deploy/caddy/fetech.caddy
+else
+  sed -e '/# apex:inicio/,/# apex:fim/d' -e "s/__DOMAIN__/$DOMAIN/g" deploy/caddy/fetech.caddy
+fi > "$SITES_DIR/fetech.caddy.new"
 mv "$SITES_DIR/fetech.caddy.new" "$SITES_DIR/fetech.caddy"
 docker exec "$CADDY_CONTAINER" caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile
 echo "Caddy recarregado para $DOMAIN."

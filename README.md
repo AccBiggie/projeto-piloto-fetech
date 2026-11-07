@@ -82,7 +82,7 @@ O Fetech divide a VPS com o projeto wedding, mas tem usuário (`fetech`), pasta 
 1. **Wedding**: publicar em produção a versão em que o Caddy importa `/opt/caddy-sites` e entra na rede `proxy`.
 2. **VPS, como root**: `bash setup-vps.sh "<chave pública do CI>"` (o script está em `deploy/`). Ele cria o usuário `fetech`, a rede `proxy`, a pasta `/opt/caddy-sites` e clona o repositório em `/opt/fetech`.
 3. **VPS, como `fetech`**: criar `/opt/fetech/.env` a partir de `.env.production.example`. Preencha o domínio, a `APP_KEY`, as senhas do banco e o SMTP.
-4. **DNS**: apontar o domínio (registro A/AAAA) para o IP da VPS.
+4. **DNS**: apontar para o IP da VPS (registros A/AAAA) **os dois** nomes, `fetech.systems` e `www.fetech.systems`. O canônico é o `www`: com `APP_DOMAIN=www.fetech.systems`, o deploy configura o Caddy para emitir o certificado dos dois e redirecionar (301) o endereço sem `www`, mantendo caminho e query. O `APP_URL` precisa ser exatamente `https://www.fetech.systems`, porque canonical, Open Graph, JSON-LD e sitemap saem dele.
 5. **GitHub > Settings > Secrets and variables > Actions**:
    - Secrets: `VPS_HOST`, `VPS_USER` (`fetech`), `VPS_SSH_KEY` (chave privada do CI), `VPS_KNOWN_HOSTS` (`ssh-keyscan -t ed25519 <host>`) e, se a porta não for 22, `VPS_PORT`.
    - Variável: `SITE_URL` (`https://seu-dominio.com.br`).
