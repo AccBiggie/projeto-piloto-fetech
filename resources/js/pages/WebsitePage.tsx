@@ -21,9 +21,10 @@ import { useState } from 'react';
 import { Link as RouterLink } from 'react-router';
 
 import { whatsappUrl } from '@/components/FloatingActions';
-import { ease, entrance, type FaqItem, graphiteGlow, noMotion, ServiceCta, ServiceFaq, ServicePrompt, usePageTitle } from '@/components/ServiceSections';
+import { ease, entrance, type FaqItem, graphiteGlow, noMotion, ServiceCta, ServiceFaq, ServicePrompt } from '@/components/ServiceSections';
 import SectionTitle from '@/components/SectionTitle';
 import { useReveal } from '@/reveal/useReveal';
+import { pageMeta, usePageMeta } from '@/seo';
 import { brand, monoFont } from '@/theme';
 
 // Página do serviço de criação de sites: o que vem incluso, o site em cada tela, as etapas do
@@ -432,7 +433,7 @@ function Process() {
 }
 
 export default function WebsitePage() {
-    usePageTitle('Criação de Sites – Fetech');
+    usePageMeta(pageMeta('websites'));
 
     return (
         <>

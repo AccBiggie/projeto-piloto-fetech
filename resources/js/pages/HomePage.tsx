@@ -5,8 +5,10 @@ import About from '@/components/About';
 import Hero from '@/components/Hero';
 import Services from '@/components/Services';
 import { scrollToSection } from '@/navigation';
+import { pageMeta, usePageMeta } from '@/seo';
 
 export default function HomePage() {
+    usePageMeta(pageMeta('home'));
     const { hash } = useLocation();
 
     // Links do menu como "/#servicos" vindos de outra página

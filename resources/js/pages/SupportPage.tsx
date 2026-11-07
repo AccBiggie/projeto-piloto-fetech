@@ -44,8 +44,9 @@ import { Link as RouterLink } from 'react-router';
 
 import { whatsappUrl } from '@/components/FloatingActions';
 import SectionTitle from '@/components/SectionTitle';
-import { ease, entrance, type FaqItem, graphiteGlow, noMotion, ServiceCta, ServiceFaq, ServicePrompt, usePageTitle } from '@/components/ServiceSections';
+import { ease, entrance, type FaqItem, graphiteGlow, noMotion, ServiceCta, ServiceFaq, ServicePrompt } from '@/components/ServiceSections';
 import { useReveal } from '@/reveal/useReveal';
+import { pageMeta, usePageMeta } from '@/seo';
 import { brand, monoFont } from '@/theme';
 
 // Página do serviço de suporte e soluções em TI, a origem da Fetech na assistência técnica:
@@ -751,7 +752,7 @@ function Business() {
 }
 
 export default function SupportPage() {
-    usePageTitle('Suporte e Soluções em TI – Fetech');
+    usePageMeta(pageMeta('support'));
 
     return (
         <>

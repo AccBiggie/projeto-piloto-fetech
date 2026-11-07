@@ -32,9 +32,10 @@ import { Link as RouterLink } from 'react-router';
 
 import { whatsappUrl } from '@/components/FloatingActions';
 import SectionTitle from '@/components/SectionTitle';
-import { ease, entrance, type FaqItem, graphiteGlow, ServiceCta, ServiceFaq, ServicePrompt, usePageTitle } from '@/components/ServiceSections';
+import { ease, entrance, type FaqItem, graphiteGlow, ServiceCta, ServiceFaq, ServicePrompt } from '@/components/ServiceSections';
 import { prefersReducedMotion } from '@/reveal/revealObserver';
 import { useReveal } from '@/reveal/useReveal';
+import { pageMeta, usePageMeta } from '@/seo';
 import { brand, monoFont } from '@/theme';
 
 // Página do serviço de loja virtual: planos pelo tamanho do catálogo, recursos agrupados, o
@@ -502,7 +503,7 @@ function Journey() {
 }
 
 export default function StorePage() {
-    usePageTitle('Loja Virtual – Fetech');
+    usePageMeta(pageMeta('store'));
 
     return (
         <>

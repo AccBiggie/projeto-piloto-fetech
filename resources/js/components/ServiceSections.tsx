@@ -8,7 +8,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link as RouterLink } from 'react-router';
 
 import SectionTitle from '@/components/SectionTitle';
@@ -30,17 +30,6 @@ export const entrance = (delay: number) => ({ animation: `${heroIn} .7s ${ease} 
 const caret = keyframes`
     50% { opacity: 0; }
 `;
-
-/** Troca o título da aba enquanto a página estiver aberta. */
-export function usePageTitle(title: string) {
-    useEffect(() => {
-        const previous = document.title;
-        document.title = title;
-        return () => {
-            document.title = previous;
-        };
-    }, [title]);
-}
 
 /** Caminho em fonte mono com cursor piscando, acima do título do topo: "> servicos/loja-virtual" */
 export function ServicePrompt({ path }: { path: string }) {

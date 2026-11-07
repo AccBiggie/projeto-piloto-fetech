@@ -23,8 +23,9 @@ import { categories, categoryOf, type CategoryId, isCategory, normalize, type Po
 import { whatsappUrl } from '@/components/FloatingActions';
 import PostCard, { Avatar, CategoryTag, PostCover, PostMeta } from '@/components/PostCard';
 import SectionTitle from '@/components/SectionTitle';
-import { ease, entrance, graphiteGlow, noMotion, ServicePrompt, usePageTitle } from '@/components/ServiceSections';
+import { ease, entrance, graphiteGlow, noMotion, ServicePrompt } from '@/components/ServiceSections';
 import { useReveal } from '@/reveal/useReveal';
+import { pageMeta, usePageMeta } from '@/seo';
 import { brand, monoFont } from '@/theme';
 
 // Blog da Fetech: busca, filtro por categoria e ordenação guardados na URL (?busca=&categoria=&ordem=),
@@ -211,7 +212,7 @@ function NoResults({ search, category, onClear }: { search: string; category: Ca
 }
 
 export default function BlogPage() {
-    usePageTitle('Blog – Fetech');
+    usePageMeta(pageMeta('blog'));
     const [params, setParams] = useSearchParams();
     const [visible, setVisible] = useState(PAGE_SIZE);
     const searchRef = useRef<HTMLInputElement>(null);
