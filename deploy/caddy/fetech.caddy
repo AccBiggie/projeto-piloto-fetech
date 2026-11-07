@@ -1,5 +1,6 @@
 # Site do Fetech no Caddy da VPS. O deploy troca __DOMAIN__ pelo APP_DOMAIN do .env
 # e grava o resultado em /opt/caddy-sites/fetech.caddy, importado pelo Caddyfile principal.
+# __APEX_DOMAIN__ é o mesmo domínio sem o "www."; sem "www." no APP_DOMAIN, o bloco do apex é removido.
 # CSP e demais headers de segurança vêm do Laravel e do Nginx.
 __DOMAIN__ {
 	encode zstd gzip
@@ -9,3 +10,10 @@ __DOMAIN__ {
 	}
 	reverse_proxy fetech-web:80
 }
+
+# apex:inicio
+# Um domínio só para os buscadores: o endereço sem "www" redireciona (301) para o canônico
+__APEX_DOMAIN__ {
+	redir https://__DOMAIN__{uri} permanent
+}
+# apex:fim

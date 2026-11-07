@@ -2,9 +2,12 @@
 
 namespace App\Providers;
 
+use App\Support\Seo;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\View as ViewFactory;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +26,22 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureRateLimiting();
+        $this->shareSeo();
+    }
+
+    /**
+     * Meta do <head> do shell da SPA. Quem renderiza o shell pode mandar a própria meta (post, 404);
+     * sem ela, vale a da rota atual.
+     */
+    protected function shareSeo(): void
+    {
+        ViewFactory::composer('app', function (View $view) {
+            $seo = app(Seo::class);
+            if (! array_key_exists('seo', $view->getData())) {
+                $view->with('seo', $seo->page(request()->route()?->getName()));
+            }
+            $view->with('seoClient', Seo::json($seo->client()));
+        });
     }
 
     /**

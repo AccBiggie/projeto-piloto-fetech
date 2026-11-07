@@ -25,8 +25,8 @@ import { Link as RouterLink } from 'react-router';
 
 import { type QuotePayload, type QuoteResult, sendQuote } from '@/api/quote';
 import { whatsappUrl } from '@/components/FloatingActions';
-import { usePageTitle } from '@/components/ServiceSections';
 import { services } from '@/components/Services';
+import { pageMeta, usePageMeta } from '@/seo';
 import { brand, monoFont } from '@/theme';
 
 // Orçamento em etapas. Os ids de serviços e do perfil são os mesmos validados no backend
@@ -158,7 +158,7 @@ function Aside({ step, done }: { step: number; done: boolean }) {
 }
 
 export default function QuotePage() {
-    usePageTitle('Orçamento – Fetech');
+    usePageMeta(pageMeta('quote'));
     const [quote, setQuote] = useState(emptyQuote);
     const [step, setStep] = useState(0);
     const [touched, setTouched] = useState<Partial<Record<'name' | 'email' | 'phone' | 'services', boolean>>>({});

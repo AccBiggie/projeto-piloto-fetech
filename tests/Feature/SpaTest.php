@@ -27,7 +27,9 @@ class SpaTest extends TestCase
 
     public function test_blog_post_renders_react_shell(): void
     {
-        $this->get('/blog/primeiro-post')
+        config(['seo.blog_posts' => base_path('tests/Fixtures/blog/posts.json')]);
+
+        $this->get('/blog/site-ou-loja-virtual')
             ->assertOk()
             ->assertSee('<div id="root"></div>', false);
     }

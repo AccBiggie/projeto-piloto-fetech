@@ -8,8 +8,9 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { Link as RouterLink, useLocation } from 'react-router';
 
-import { ease, entrance, graphiteGlow, usePageTitle } from '@/components/ServiceSections';
+import { ease, entrance, graphiteGlow } from '@/components/ServiceSections';
 import { services } from '@/components/Services';
+import { notFoundMeta, usePageMeta } from '@/seo';
 import { brand, monoFont, titleFont } from '@/theme';
 
 // Endereço que não existe: topo grafite como o das páginas de serviço, com o caminho pedido num
@@ -30,7 +31,7 @@ function readablePath(pathname: string) {
 }
 
 export default function NotFoundPage() {
-    usePageTitle('Página não encontrada – Fetech');
+    usePageMeta(notFoundMeta());
     const { pathname } = useLocation();
 
     return (
