@@ -4,8 +4,11 @@ import PsychologyOutlinedIcon from '@mui/icons-material/PsychologyOutlined';
 import SportsEsportsOutlinedIcon from '@mui/icons-material/SportsEsportsOutlined';
 import TipsAndUpdatesOutlinedIcon from '@mui/icons-material/TipsAndUpdatesOutlined';
 
-// Conteúdo do blog. Enquanto a lista de posts estiver vazia, a página mostra o aviso de
-// lançamento; para publicar, basta acrescentar um post em `posts` (o mais recente pode ficar em
+import data from '@content/blog/posts.json';
+
+// Conteúdo do blog. Os posts ficam em resources/content/blog/posts.json, lido também pelo Laravel
+// para a meta de cada post e o sitemap. Enquanto a lista estiver vazia, a página mostra o aviso de
+// lançamento; para publicar, basta acrescentar um post no JSON (o mais recente pode ficar em
 // qualquer posição: a listagem ordena pela data).
 
 export const categories = [
@@ -44,7 +47,7 @@ export interface Post {
     content: PostBlock[];
 }
 
-export const posts: Post[] = [];
+export const posts = data as Post[];
 
 export const categoryOf = (id: CategoryId) => categories.find((category) => category.id === id) ?? categories[0];
 
