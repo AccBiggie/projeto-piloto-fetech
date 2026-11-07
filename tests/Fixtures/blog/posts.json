@@ -1,0 +1,12 @@
+[
+    {
+        "slug": "site-ou-loja-virtual",
+        "title": "Site institucional ou loja virtual: qual escolher?",
+        "excerpt": "Entenda a diferença entre os dois, quando vale começar por cada um e como crescer de um para o outro sem refazer tudo.",
+        "category": "desenvolvimento",
+        "date": "2026-10-20",
+        "author": { "name": "Andre Ferreira", "role": "Fetech" },
+        "cover": "/assets/blog/site-ou-loja.png",
+        "content": [{ "type": "p", "text": "Muita gente chega até nós com a mesma dúvida." }]
+    }
+]
