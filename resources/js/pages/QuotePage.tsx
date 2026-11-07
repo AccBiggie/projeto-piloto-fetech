@@ -167,11 +167,6 @@ export default function QuotePage() {
     const errors = result && !result.ok ? result.errors : undefined;
     const last = step === steps.length - 1;
 
-    // A página abre no topo, mesmo vindo do rodapé da home
-    useEffect(() => {
-        window.scrollTo(0, 0);
-    }, []);
-
     // A cada etapa o foco vai para o título, para leitores de tela anunciarem a pergunta nova
     const titleRef = useRef<HTMLHeadingElement>(null);
     const firstRender = useRef(true);

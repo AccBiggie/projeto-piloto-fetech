@@ -149,9 +149,6 @@ function Article({ post }: { post: Post }) {
         .filter((other) => other.category === post.category && other.slug !== post.slug)
         .slice(0, 3);
 
-    // Ao trocar de post pelos relacionados, a leitura começa do topo
-    useEffect(() => window.scrollTo(0, 0), [post.slug]);
-
     return (
         <>
             <ReadingProgress />
