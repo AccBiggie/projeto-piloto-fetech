@@ -6,6 +6,7 @@ import CookieConsent from '@/components/CookieConsent';
 import FloatingActions from '@/components/FloatingActions';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
+import { useScrollRestoration } from '@/navigation';
 import BlogPage from '@/pages/BlogPage';
 import EmailPage from '@/pages/EmailPage';
 import HomePage from '@/pages/HomePage';
@@ -22,6 +23,7 @@ const formPages = ['/orcamento-site'];
 export default function App() {
     const { pathname } = useLocation();
     const formPage = formPages.includes(pathname);
+    useScrollRestoration();
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>

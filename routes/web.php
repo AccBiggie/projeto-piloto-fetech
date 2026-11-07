@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Endereço antigo da home
@@ -14,3 +15,11 @@ Route::view('/criacao-de-sites', 'app')->name('websites');
 Route::view('/loja-virtual', 'app')->name('store');
 Route::view('/email-profissional', 'app')->name('email');
 Route::view('/suporte-ti', 'app')->name('support');
+
+// Qualquer outro endereço: o React mostra a página "não encontrada", mas a resposta sai como 404
+// para buscadores e ferramentas não tratarem o endereço como página válida. Na API continua o 404 em JSON.
+Route::fallback(function (Request $request) {
+    abort_if($request->is('api/*'), 404);
+
+    return response()->view('app', status: 404);
+});

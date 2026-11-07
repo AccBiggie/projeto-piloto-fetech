@@ -67,6 +67,20 @@ class SpaTest extends TestCase
             ->assertSee('<div id="root"></div>', false);
     }
 
+    public function test_unknown_url_renders_react_shell_with_404_status(): void
+    {
+        $response = $this->get('/pagina-que-nao-existe')
+            ->assertNotFound()
+            ->assertSee('<div id="root"></div>', false);
+
+        $this->assertStringContainsString("default-src 'self'", $response->headers->get('Content-Security-Policy'));
+    }
+
+    public function test_unknown_api_url_still_returns_json_404(): void
+    {
+        $this->get('/api/nao-existe')->assertNotFound()->assertHeader('Content-Type', 'application/json');
+    }
+
     public function test_old_home_url_redirects_permanently(): void
     {
         $this->get('/fetech/index')->assertRedirect('/')->assertStatus(301);
