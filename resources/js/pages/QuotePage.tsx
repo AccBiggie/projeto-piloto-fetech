@@ -25,6 +25,7 @@ import { Link as RouterLink } from 'react-router';
 
 import { type QuotePayload, type QuoteResult, sendQuote } from '@/api/quote';
 import { whatsappUrl } from '@/components/FloatingActions';
+import { usePageTitle } from '@/components/ServiceSections';
 import { services } from '@/components/Services';
 import { brand, monoFont } from '@/theme';
 
@@ -157,6 +158,7 @@ function Aside({ step, done }: { step: number; done: boolean }) {
 }
 
 export default function QuotePage() {
+    usePageTitle('Orçamento – Fetech');
     const [quote, setQuote] = useState(emptyQuote);
     const [step, setStep] = useState(0);
     const [touched, setTouched] = useState<Partial<Record<'name' | 'email' | 'phone' | 'services', boolean>>>({});
