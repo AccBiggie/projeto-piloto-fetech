@@ -28,8 +28,9 @@ import { Link as RouterLink } from 'react-router';
 
 import { whatsappUrl } from '@/components/FloatingActions';
 import SectionTitle from '@/components/SectionTitle';
-import { ease, entrance, type FaqItem, graphiteGlow, ServiceCta, ServiceFaq, ServicePrompt, usePageTitle } from '@/components/ServiceSections';
+import { ease, entrance, type FaqItem, graphiteGlow, ServiceCta, ServiceFaq, ServicePrompt } from '@/components/ServiceSections';
 import { useReveal } from '@/reveal/useReveal';
+import { pageMeta, usePageMeta } from '@/seo';
 import { brand, monoFont } from '@/theme';
 
 // Página do serviço de e-mail profissional: o endereço montado com o nome da empresa, a proteção
@@ -411,7 +412,7 @@ function Migration() {
 }
 
 export default function EmailPage() {
-    usePageTitle('E-mail Profissional – Fetech');
+    usePageMeta(pageMeta('email'));
 
     return (
         <>

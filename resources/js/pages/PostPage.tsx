@@ -18,7 +18,8 @@ import { Link as RouterLink, useParams } from 'react-router';
 
 import { findPost, type Post, type PostBlock, sortedPosts } from '@/blog/posts';
 import PostCard, { Avatar, CategoryTag, PostCover, PostMeta } from '@/components/PostCard';
-import { graphiteGlow, usePageTitle } from '@/components/ServiceSections';
+import { graphiteGlow } from '@/components/ServiceSections';
+import { notFoundMeta, postMeta, usePageMeta } from '@/seo';
 import { brand, monoFont } from '@/theme';
 
 // Leitura de um post: barra de progresso da leitura, corpo em blocos, compartilhamento e posts
@@ -126,7 +127,7 @@ function Share({ post }: { post: Post }) {
 }
 
 function MissingPost() {
-    usePageTitle('Post não encontrado – Fetech');
+    usePageMeta(notFoundMeta());
     return (
         <Container maxWidth="md" sx={{ py: 10 }}>
             <Stack spacing={2} sx={{ alignItems: 'center', textAlign: 'center' }}>
@@ -144,7 +145,7 @@ function MissingPost() {
 }
 
 function Article({ post }: { post: Post }) {
-    usePageTitle(`${post.title} – Blog Fetech`);
+    usePageMeta(postMeta(post));
     const related = sortedPosts()
         .filter((other) => other.category === post.category && other.slug !== post.slug)
         .slice(0, 3);

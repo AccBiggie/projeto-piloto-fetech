@@ -3,6 +3,7 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import MenuIcon from '@mui/icons-material/Menu';
+import RequestQuoteOutlinedIcon from '@mui/icons-material/RequestQuoteOutlined';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -38,7 +39,7 @@ export const navItems = [
     { label: 'Blog', to: '/blog' },
 ];
 
-export const cta = { label: 'Orçamento', to: '/orcamento-site' };
+export const cta = { label: 'Orçamento', longLabel: 'Solicitar orçamento', to: '/orcamento-site' };
 
 // "Serviços" abre um submenu com a página de cada serviço ou, sem página, a âncora do card na seção
 const servicesTo = '/#servicos';
@@ -51,6 +52,21 @@ const drawerItemSx = {
     '&:hover, &.Mui-selected, &.Mui-selected:hover': { bgcolor: brand.redDark },
     '&.Mui-selected .MuiListItemText-primary': { fontWeight: 700 },
 } as const;
+
+// CTA de orçamento: botão preenchido que contrasta com a barra. Sobre o hero é vermelho; com a barra
+// vermelha fixa, inverte para branco e no hover vai para o grafite.
+const ctaSx = (solid: boolean) =>
+    ({
+        fontWeight: 600,
+        color: solid ? brand.red : '#fff',
+        bgcolor: solid ? '#fff' : brand.red,
+        border: `1px solid ${solid ? '#fff' : brand.red}`,
+        boxShadow: 'none',
+        transition: 'background-color .3s, color .3s, border-color .3s',
+        '&:hover': solid ? { bgcolor: brand.graphite, color: '#fff', borderColor: brand.graphite } : { bgcolor: '#fff', color: brand.red },
+        '&.Mui-focusVisible': { outline: '2px solid #fff', outlineOffset: 2 },
+        '@media (prefers-reduced-motion: reduce)': { transition: 'none' },
+    }) as const;
 
 // Ao rolar, o menu vira uma barra fixa que desce do topo
 const slideDown = keyframes`
@@ -289,20 +305,36 @@ export default function Header() {
                             onClick={(event: MouseEvent) => go(event, cta.to)}
                             aria-current={isActive(cta.to) ? 'page' : undefined}
                             data-cta
-                            sx={{
-                                ml: 1,
-                                fontSize: 16,
-                                fontWeight: 400,
-                                color: '#fff',
-                                border: `1px solid ${solid ? '#fff' : brand.red}`,
-                                bgcolor: solid ? 'transparent' : brand.red,
-                                transition: 'background-color .5s, color .5s',
-                                '&:hover': { bgcolor: solid ? '#fff' : 'transparent', color: solid ? brand.red : '#fff' },
-                            }}
+                            data-cta-location="header-desktop"
+                            startIcon={<RequestQuoteOutlinedIcon />}
+                            sx={{ ml: 1, fontSize: 16, px: 2, ...ctaSx(solid) }}
                         >
-                            {cta.label}
+                            {cta.longLabel}
                         </Button>
                     </Box>
+
+                    {/* No celular o CTA fica na barra, sem precisar abrir o menu */}
+                    <Button
+                        component={RouterLink}
+                        to={cta.to}
+                        onClick={(event: MouseEvent) => go(event, cta.to)}
+                        aria-current={isActive(cta.to) ? 'page' : undefined}
+                        data-cta
+                        data-cta-location="header-mobile"
+                        size="small"
+                        startIcon={<RequestQuoteOutlinedIcon />}
+                        sx={{
+                            display: { xs: 'inline-flex', md: 'none' },
+                            mr: 1,
+                            px: 1.5,
+                            whiteSpace: 'nowrap',
+                            ...ctaSx(solid),
+                            // Logo, botão e ícone do menu numa linha só nas telas mais estreitas
+                            '@media (max-width: 360px)': { '& .MuiButton-startIcon': { display: 'none' } },
+                        }}
+                    >
+                        {cta.label}
+                    </Button>
 
                     <IconButton edge="end" color="inherit" aria-label="Abrir menu" onClick={() => setOpen(true)} sx={{ display: { md: 'none' } }}>
                         <MenuIcon />
@@ -317,7 +349,7 @@ export default function Header() {
                 slotProps={{ paper: { sx: { width: 260, bgcolor: brand.red, color: '#fff', pt: '30vh' } } }}
             >
                 <List component="nav">
-                    {[...navItems, cta].map((item) =>
+                    {navItems.map((item) =>
                         item.to === servicesTo ? (
                             <Box key={item.to}>
                                 <ListItemButton
@@ -360,6 +392,19 @@ export default function Header() {
                         ),
                     )}
                 </List>
+                <Button
+                    component={RouterLink}
+                    to={cta.to}
+                    onClick={(event: MouseEvent) => go(event, cta.to)}
+                    aria-current={isActive(cta.to) ? 'page' : undefined}
+                    data-cta
+                    data-cta-location="header-drawer"
+                    variant="contained"
+                    startIcon={<RequestQuoteOutlinedIcon />}
+                    sx={{ mx: 2, mt: 2, ...ctaSx(true) }}
+                >
+                    {cta.longLabel}
+                </Button>
             </Drawer>
         </AppBar>
     );

@@ -10,12 +10,14 @@
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true,
         "isolatedModules": true,
+        "resolveJsonModule": true,
         "verbatimModuleSyntax": true,
         "skipLibCheck": true,
         "noEmit": true,
         "types": ["vite/client", "node"],
         "paths": {
-            "@/*": ["./resources/js/*"]
+            "@/*": ["./resources/js/*"],
+            "@content/*": ["./resources/content/*"]
         }
     },
     "include": ["resources/js", "vite.config.ts"]
