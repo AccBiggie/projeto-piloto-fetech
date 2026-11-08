@@ -237,7 +237,7 @@ function SenderCard({ label, name, address, highlight }: { label: string; name: 
                 bgcolor: '#fff',
                 border: `2px solid ${highlight ? brand.red : 'transparent'}`,
                 boxShadow: highlight ? '0 1.25rem 2.5rem rgba(224,20,59,.16)' : '0 .5rem 1rem rgba(0,0,0,.06)',
-                opacity: highlight ? 1 : 0.75,
+                opacity: highlight ? 1 : 0.85,
             }}
         >
             <Typography sx={{ fontFamily: monoFont, fontSize: 12, color: highlight ? brand.red : brand.ink, mb: 2 }}>{label}</Typography>
