@@ -281,7 +281,7 @@ function Plans() {
                 <Box sx={{ maxWidth: 640, mb: { xs: 4, md: 6 } }}>
                     <Typography id="catalogo-label" sx={{ fontSize: 17, color: brand.ink, mb: 1 }}>
                         Quantos produtos você pretende vender?{' '}
-                        <Box component="strong" sx={{ fontFamily: monoFont, color: brand.red }}>
+                        <Box component="strong" sx={{ fontFamily: monoFont, color: brand.redText }}>
                             {stop === catalogStops.length - 1 ? `${brl(products)}+` : brl(products)}
                         </Box>
                     </Typography>
@@ -354,7 +354,7 @@ function Plans() {
                 </Grid>
                 <Typography sx={{ mt: 4, color: brand.ink, fontSize: 15 }}>
                     Precisa de algo diferente?{' '}
-                    <Box component={RouterLink} to="/orcamento-site" sx={{ color: brand.red, fontWeight: 600 }}>
+                    <Box component={RouterLink} to="/orcamento-site" sx={{ color: brand.redText, fontWeight: 600 }}>
                         Monte seu orçamento
                     </Box>{' '}
                     e combinamos a loja sob medida.

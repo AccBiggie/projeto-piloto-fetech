@@ -268,12 +268,20 @@ function Included() {
                                     </Typography>
                                     <Typography sx={{ color: brand.ink, fontSize: 15 }}>{item.text}</Typography>
                                 </Box>
-                                <Typography
+                                {/* Numeração decorativa em pseudo-elemento: não é texto da página nem entra na leitura */}
+                                <Box
                                     aria-hidden="true"
-                                    sx={{ position: 'absolute', top: 12, right: 16, fontFamily: monoFont, fontSize: 12, color: brand.mist }}
-                                >
-                                    {String(index + 1).padStart(2, '0')}
-                                </Typography>
+                                    sx={{
+                                        position: 'absolute',
+                                        top: 12,
+                                        right: 16,
+                                        fontFamily: monoFont,
+                                        fontSize: 12,
+                                        lineHeight: 1.5,
+                                        color: brand.mist,
+                                        '&::after': { content: `"${String(index + 1).padStart(2, '0')}"` },
+                                    }}
+                                />
                             </Box>
                         </Grid>
                     ))}

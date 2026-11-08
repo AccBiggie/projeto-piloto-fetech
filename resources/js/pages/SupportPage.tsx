@@ -387,7 +387,7 @@ function PreDiagnosis() {
                         com o problema descrito.
                     </Typography>
 
-                    <Typography sx={{ fontFamily: monoFont, fontSize: 13, color: brand.red, mb: 1.5 }}>1. equipamento</Typography>
+                    <Typography sx={{ fontFamily: monoFont, fontSize: 13, color: brand.redText, mb: 1.5 }}>1. equipamento</Typography>
                     <ToggleButtonGroup
                         exclusive
                         value={device}
@@ -408,7 +408,7 @@ function PreDiagnosis() {
                         ))}
                     </ToggleButtonGroup>
 
-                    <Typography sx={{ fontFamily: monoFont, fontSize: 13, color: brand.red, mb: 1.5 }}>2. o que está acontecendo</Typography>
+                    <Typography sx={{ fontFamily: monoFont, fontSize: 13, color: brand.redText, mb: 1.5 }}>2. o que está acontecendo</Typography>
                     <Stack role="group" aria-label="Sintoma" direction="row" sx={{ gap: 1, flexWrap: 'wrap', mb: 4 }}>
                         {available.map((item) => {
                             const active = item.id === symptom.id;
