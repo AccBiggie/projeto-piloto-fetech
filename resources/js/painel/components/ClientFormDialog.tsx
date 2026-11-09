@@ -17,7 +17,7 @@ import { type FormEvent, useEffect, useState } from 'react';
 import { ApiError, type Client, type ClientInput, panelApi } from '@/painel/api';
 import { theme } from '@/theme';
 
-const empty: ClientInput = { name: '', contact_name: '', email: '', phone: '', plan: '', notes: '', domains: [''] };
+const empty: ClientInput = { name: '', contact_name: '', email: '', phone: '', plan: '', project: '', notes: '', domains: [''] };
 
 /** Cadastro e edição do cliente, com os domínios do site (os mesmos hosts que aparecem no log do Caddy). */
 export default function ClientFormDialog({ open, client, onClose, onSaved }: { open: boolean; client?: Client | null; onClose: () => void; onSaved: (client: Client) => void }) {
@@ -39,6 +39,7 @@ export default function ClientFormDialog({ open, client, onClose, onSaved }: { o
                       email: client.email ?? '',
                       phone: client.phone ?? '',
                       plan: client.plan ?? '',
+                      project: client.project ?? '',
                       notes: client.notes ?? '',
                       domains: client.domains.length ? client.domains : [''],
                   }
@@ -97,6 +98,18 @@ export default function ClientFormDialog({ open, client, onClose, onSaved }: { o
                     </Grid>
                     <Grid size={{ xs: 12, sm: 6 }}>
                         <TextField label="Plano" value={form.plan ?? ''} onChange={set('plan')} fullWidth placeholder="Ex.: Loja virtual" error={!!fieldError('plan')} helperText={fieldError('plan')} />
+                    </Grid>
+                    <Grid size={12}>
+                        <TextField
+                            label="Projeto na VPS"
+                            value={form.project ?? ''}
+                            onChange={set('project')}
+                            fullWidth
+                            placeholder="padaria-central"
+                            error={!!fieldError('project')}
+                            helperText={fieldError('project') ?? 'Nome da pasta do cliente em /opt/clientes. Com ele, o bloqueio também para os containers do site depois do prazo.'}
+                            slotProps={{ htmlInput: { spellCheck: false, autoCapitalize: 'none' } }}
+                        />
                     </Grid>
                     <Grid size={12}>
                         <Typography sx={{ fontWeight: 600, mb: 0.5 }}>Domínios do site</Typography>
