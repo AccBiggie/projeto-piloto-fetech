@@ -1,0 +1,13 @@
+# Modelo do site de um cliente. Copie para /opt/caddy-sites/<projeto>.caddy, troque os domínios e o nome
+# do serviço e recarregue o Caddy:
+#   docker exec wedding-caddy-1 caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile
+#
+# <projeto> é a pasta do cliente em /opt/clientes (o mesmo nome cadastrado no campo "Projeto" do painel),
+# com o docker-compose.yml dele. O serviço web do cliente entra na rede "proxy" com um alias único.
+cliente.com.br, www.cliente.com.br {
+	# Primeiro: página de suspensão quando o cliente está bloqueado no painel
+	import suspensao
+
+	encode zstd gzip
+	reverse_proxy cliente-web:80
+}
