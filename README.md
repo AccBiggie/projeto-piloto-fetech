@@ -70,6 +70,66 @@ Também há cabeçalhos de segurança (CSP com nonce, `X-Frame-Options`, `nosnif
 
 Essas camadas seguram floods de aplicação (muitas requisições de poucos IPs). Ataques volumétricos distribuídos (DDoS de rede) precisam ser barrados antes do servidor, por um CDN/WAF como Cloudflare. Nesse caso, configure `real_ip` no Nginx para que os limites usem o IP do visitante.
 
+## Painel de clientes
+
+Área administrativa em `/painel` para cadastrar os clientes da FETECH, ativar ou suspender cada um e acompanhar o uso do site de cada cliente: requisições por hora ou por dia (24 h, 7, 30 e 90 dias), respostas por status, dados enviados e tempo médio.
+
+- **Acesso:** e-mail e senha (hash **Argon2id**, `config/hashing.php`) seguidos do código de 6 dígitos de um app autenticador (TOTP, via Laravel Fortify), com códigos de recuperação. O 2FA é obrigatório: quem ainda não configurou é levado à tela do QR code e a API responde 403 até a confirmação. Login limitado a 5 tentativas por minuto por e-mail e IP (e 20 por IP); código TOTP, a 5 por minuto. Não há cadastro público nem redefinição de senha por e-mail.
+- **Administradores:** criados pela linha de comando, que pede a senha (mínimo de 12 caracteres, com maiúsculas, minúsculas, números e símbolos):
+
+  ```bash
+  docker compose exec app php artisan painel:usuario voce@fetech.systems --name="Seu Nome"
+  # Produção: docker compose -f docker-compose.prod.yml exec app php artisan painel:usuario ...
+  # Celular perdido sem códigos de recuperação: o mesmo comando com --reset-2fa
+  ```
+
+- **Estatísticas:** o serviço `scheduler` roda `php artisan painel:importar-acessos` a cada minuto. Ele lê só as linhas novas dos logs JSON do Caddy (guarda a posição de cada arquivo e termina o arquivo antigo quando o Caddy o rotaciona), soma as requisições por domínio e hora em `request_stats` e apaga o que passar de `PAINEL_RETENTION_DAYS`. Cada cliente vê os domínios cadastrados nele; acessos de domínios ainda não cadastrados ficam guardados e aparecem quando o domínio é cadastrado.
+- **Bloquear** (motivo *manual* ou *inadimplência*, com observação) tira o site do ar na hora: os domínios do cliente passam a mostrar uma página de suspensão (503). Se o bloqueio durar mais que `PAINEL_PARAR_APOS_DIAS` (7 por padrão), os containers do projeto do cliente também são parados; ao desbloquear, eles são religados e só então a página sai. Cada bloqueio e desbloqueio fica no histórico do cliente, com quem fez. Detalhes em "Bloqueio de clientes", abaixo.
+
+### Ligar os logs do Caddy (uma vez, na VPS)
+
+1. **Wedding** (dono do container do Caddy): montar a pasta do host `/opt/caddy-logs` em `/var/log/caddy` no serviço do Caddy e publicar.
+2. Em **cada site** que deve aparecer no painel (o `fetech.caddy` e os arquivos dos clientes em `/opt/caddy-sites`), incluir no bloco do domínio:
+
+   ```caddy
+   log {
+   	output file /var/log/caddy/access.log {
+   		roll_size 50MiB
+   		roll_keep 10
+   		roll_uncompressed
+   		mode 0644
+   	}
+   	format json
+   }
+   ```
+
+   Todos os sites podem gravar no mesmo arquivo, com a mesma configuração. `roll_uncompressed` deixa o importador terminar o arquivo rotacionado, e `mode 0644` (Caddy 2.8 ou mais novo) deixa o container do Fetech ler o log. Depois, `docker exec wedding-caddy-1 caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile`.
+3. **`.env` do Fetech:** `CADDY_LOG_DIR=/opt/caddy-logs` e `CADDY_ACCESS_LOGS=/var/log/caddy/access.log` (modelo em `.env.production.example`). Para conferir: `docker compose -f docker-compose.prod.yml exec scheduler php artisan painel:importar-acessos`.
+
+### Bloqueio de clientes
+
+Cada cliente tem o próprio projeto Docker em `/opt/clientes/<projeto>` (com o `docker-compose.yml`) e um arquivo de site em `/opt/caddy-sites/<projeto>.caddy`, importado pelo Caddy do wedding, como o Fetech. O painel não tem acesso ao Docker: ele só grava arquivos, e quem age são o Caddy e um script da VPS.
+
+```
+painel ──grava──▶ /opt/caddy-bloqueios/painel/hosts/<domínio>  ──lido a cada requisição──▶ Caddy (página 503)
+       ──grava──▶ /opt/caddy-bloqueios/painel/parar.txt        ──a cada minuto──▶ fetech-bloqueios (root)
+       ◀──lê───── /opt/caddy-bloqueios/parados/<projeto>       ◀──marca o que parou──┘   docker compose stop/start
+```
+
+- **Página de suspensão:** o trecho `deploy/caddy/suspensao.caddy` (gravado pelo deploy em `/opt/caddy-sites/00-suspensao.caddy`) confere se existe o arquivo com o nome do domínio e, se existir, responde com `deploy/caddy/suspenso.html`, status 503 e `Retry-After`. Vale na hora, sem reload do Caddy. Se o Fetech cair, os sites continuam como estão.
+- **Containers:** `painel:sincronizar-bloqueios` (a cada minuto, no `scheduler`, e logo depois de cada alteração no painel) lista em `parar.txt` os projetos bloqueados há mais que o prazo. O script `deploy/bloqueios/containers.sh` (instalado como `/usr/local/sbin/fetech-bloqueios`, timer `fetech-bloqueios.timer`) para esses projetos, para de novo os que forem religados durante o bloqueio e religa os que saírem da lista. Só aceita nomes de pasta simples dentro de `/opt/clientes` com um arquivo compose; links simbólicos são ignorados.
+- **Sem projeto cadastrado**, o bloqueio fica só na página de suspensão.
+- **Faturas:** o futuro controle de faturas bloqueia com `$client->block(BlockReason::Nonpayment, ...)` e libera com `$client->unblock(...)`; o resto acontece sozinho.
+
+**Ligar (uma vez, na VPS):**
+
+1. Como root, rodar de novo `bash /opt/fetech/deploy/setup-vps.sh "<chave pública do CI>"`: cria `/opt/caddy-bloqueios` (`painel/` gravável pelo PHP do Fetech, UID 1000), `/opt/clientes` e instala o timer. Rode de novo sempre que `deploy/bloqueios/` mudar.
+2. **Wedding:** montar `/opt/caddy-bloqueios` em `/srv/bloqueios` (só leitura) no serviço do Caddy e publicar.
+3. **`.env` do Fetech:** `PAINEL_BLOQUEIOS_DIR=/var/lib/painel/bloqueios`, `PAINEL_PARADOS_DIR=/var/lib/painel/parados` e `PAINEL_PARAR_APOS_DIAS` (modelo em `.env.production.example`), e fazer o deploy.
+4. **Cada site de cliente:** começar o bloco do domínio com `import suspensao` (modelo em `deploy/caddy/cliente.caddy.example`), recarregar o Caddy e cadastrar no painel o nome da pasta do projeto.
+
+Para conferir: `systemctl list-timers fetech-bloqueios.timer`, `journalctl -u fetech-bloqueios` e `docker compose -f docker-compose.prod.yml exec scheduler php artisan painel:sincronizar-bloqueios`.
+
 ## CI/CD e deploy
 
 - **`main`**: recebe os PRs das branches de trabalho. O CI (`.github/workflows/ci.yml`) roda os testes do backend, o build do frontend e o build das imagens de produção.

@@ -6,7 +6,8 @@ import { defineConfig } from 'vite';
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/js/main.tsx'],
+            // Site público e painel administrativo em bundles separados: o site não carrega o código do painel
+            input: ['resources/js/main.tsx', 'resources/js/painel/main.tsx'],
             refresh: true,
         }),
         react(),

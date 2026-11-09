@@ -1,0 +1,22 @@
+# Bloqueio de clientes pelo painel do Fetech. O deploy grava este arquivo em /opt/caddy-sites/00-suspensao.caddy
+# ("00-" para ser lido antes dos sites que o importam). Cada site de cliente começa com "import suspensao".
+#
+# O painel cria /opt/caddy-bloqueios/painel/hosts/<domínio> quando o cliente é bloqueado e apaga ao desbloquear.
+# O Caddy confere o arquivo a cada requisição: o bloqueio vale na hora, sem reload. A pasta /opt/caddy-bloqueios
+# precisa estar montada só leitura em /srv/bloqueios no container do Caddy; sem ela, nenhum site é bloqueado.
+(suspensao) {
+	@fetech_suspenso file {
+		root /srv/bloqueios/painel/hosts
+		try_files {host}
+	}
+	handle @fetech_suspenso {
+		# 503 com Retry-After: indisponibilidade temporária para navegadores e buscadores
+		header Cache-Control "no-store"
+		header Retry-After 3600
+		root * /srv/bloqueios/pagina
+		rewrite * /index.html
+		file_server {
+			status 503
+		}
+	}
+}

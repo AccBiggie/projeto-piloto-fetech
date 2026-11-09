@@ -387,7 +387,7 @@ function PreDiagnosis() {
                         com o problema descrito.
                     </Typography>
 
-                    <Typography sx={{ fontFamily: monoFont, fontSize: 13, color: brand.red, mb: 1.5 }}>1. equipamento</Typography>
+                    <Typography sx={{ fontFamily: monoFont, fontSize: 13, color: brand.redText, mb: 1.5 }}>1. equipamento</Typography>
                     <ToggleButtonGroup
                         exclusive
                         value={device}
@@ -408,7 +408,7 @@ function PreDiagnosis() {
                         ))}
                     </ToggleButtonGroup>
 
-                    <Typography sx={{ fontFamily: monoFont, fontSize: 13, color: brand.red, mb: 1.5 }}>2. o que está acontecendo</Typography>
+                    <Typography sx={{ fontFamily: monoFont, fontSize: 13, color: brand.redText, mb: 1.5 }}>2. o que está acontecendo</Typography>
                     <Stack role="group" aria-label="Sintoma" direction="row" sx={{ gap: 1, flexWrap: 'wrap', mb: 4 }}>
                         {available.map((item) => {
                             const active = item.id === symptom.id;
@@ -649,22 +649,29 @@ function ComputerAdvisor() {
                                     {usage.specs.map((spec) => {
                                         const Icon = specIcons[spec.part];
                                         return (
-                                            <Stack key={spec.part} direction="row" sx={{ alignItems: 'center', gap: 2 }}>
-                                                <Icon sx={{ color: brand.red }} aria-hidden="true" />
-                                                <Box sx={{ flex: 1, minWidth: 0 }}>
-                                                    <Typography component="dt" sx={{ fontSize: 12, opacity: 0.6, fontFamily: monoFont }}>
+                                            // Cada par dt/dd fica num div (o único filho que o <dl> aceita além deles). O ícone vai
+                                            // dentro do dt e as barras dentro do dd; com display: contents, os quatro ocupam a grade do div.
+                                            <Box
+                                                key={spec.part}
+                                                sx={{ display: 'grid', gridTemplateColumns: 'auto minmax(0, 1fr) auto', alignItems: 'center', columnGap: 2 }}
+                                            >
+                                                <Box component="dt" sx={{ display: 'contents' }}>
+                                                    <Icon sx={{ color: brand.red, gridColumn: 1, gridRow: '1 / span 2' }} aria-hidden="true" />
+                                                    <Typography component="span" sx={{ gridColumn: 2, gridRow: 1, fontSize: 12, opacity: 0.6, fontFamily: monoFont }}>
                                                         {spec.part.toLowerCase()}
                                                     </Typography>
-                                                    <Typography component="dd" sx={{ m: 0, fontWeight: 600 }}>
+                                                </Box>
+                                                <Box component="dd" sx={{ display: 'contents' }}>
+                                                    <Typography component="span" sx={{ gridColumn: 2, gridRow: 2, fontWeight: 600 }}>
                                                         {spec.value}
                                                     </Typography>
+                                                    <Stack direction="row" spacing={0.5} aria-label={`Nível ${spec.level} de 4`} role="img" sx={{ gridColumn: 3, gridRow: '1 / span 2' }}>
+                                                        {[1, 2, 3, 4].map((step) => (
+                                                            <Box key={step} sx={{ width: { xs: 10, sm: 16 }, height: 8, borderRadius: 0.5, bgcolor: step <= spec.level ? brand.red : 'rgba(255,255,255,.15)' }} />
+                                                        ))}
+                                                    </Stack>
                                                 </Box>
-                                                <Stack direction="row" spacing={0.5} aria-label={`Nível ${spec.level} de 4`} role="img">
-                                                    {[1, 2, 3, 4].map((step) => (
-                                                        <Box key={step} sx={{ width: { xs: 10, sm: 16 }, height: 8, borderRadius: 0.5, bgcolor: step <= spec.level ? brand.red : 'rgba(255,255,255,.15)' }} />
-                                                    ))}
-                                                </Stack>
-                                            </Stack>
+                                            </Box>
                                         );
                                     })}
                                 </Stack>

@@ -8,6 +8,7 @@ test -f .env || { echo "Falta o .env de produção em $(pwd) (modelo: .env.produ
 COMPOSE="docker compose -f docker-compose.prod.yml"
 CADDY_CONTAINER="${CADDY_CONTAINER:-wedding-caddy-1}"
 SITES_DIR=/opt/caddy-sites
+BLOCKS_DIR=/opt/caddy-bloqueios
 DOMAIN=$(grep -E '^APP_DOMAIN=' .env | cut -d= -f2- | tr -d '"' || true)
 test -n "$DOMAIN" || { echo "Defina APP_DOMAIN no .env." >&2; exit 1; }
 
@@ -44,5 +45,14 @@ else
   sed -e '/# apex:inicio/,/# apex:fim/d' -e "s/__DOMAIN__/$DOMAIN/g" deploy/caddy/fetech.caddy
 fi > "$SITES_DIR/fetech.caddy.new"
 mv "$SITES_DIR/fetech.caddy.new" "$SITES_DIR/fetech.caddy"
+
+# Bloqueio de clientes: trecho "suspensao" importado pelos sites dos clientes e a página de suspensão
+cp deploy/caddy/suspensao.caddy "$SITES_DIR/00-suspensao.caddy.new"
+mv "$SITES_DIR/00-suspensao.caddy.new" "$SITES_DIR/00-suspensao.caddy"
+if [ -w "$BLOCKS_DIR/pagina" ]; then
+  cp deploy/caddy/suspenso.html "$BLOCKS_DIR/pagina/index.html"
+else
+  echo "Aviso: $BLOCKS_DIR/pagina não existe ou não é gravável; rode o deploy/setup-vps.sh de novo." >&2
+fi
 docker exec "$CADDY_CONTAINER" caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile
 echo "Caddy recarregado para $DOMAIN."

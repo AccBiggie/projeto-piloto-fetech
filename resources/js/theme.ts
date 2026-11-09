@@ -7,6 +7,8 @@ import { revealCss } from '@/reveal/revealObserver';
 export const brand = {
     red: '#e0143b',
     redDark: '#8c0a24',
+    // Vermelho para texto pequeno sobre o cinza das seções (contraste 4,9:1 com `section`)
+    redText: '#c81135',
     redHover: '#ff0000',
     teal: '#82adb0',
     mist: '#c7d0cc',
