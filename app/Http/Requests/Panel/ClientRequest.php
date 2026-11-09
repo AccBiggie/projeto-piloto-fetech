@@ -4,6 +4,7 @@ namespace App\Http\Requests\Panel;
 
 use App\Models\Client;
 use App\Models\ClientDomain;
+use App\Support\Blocking\BlockSync;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -18,7 +19,11 @@ class ClientRequest extends FormRequest
             ->values()
             ->all();
 
-        $this->merge(['domains' => $domains]);
+        $project = $this->input('project');
+        $this->merge([
+            'domains' => $domains,
+            'project' => is_string($project) && trim($project) !== '' ? strtolower(trim($project)) : null,
+        ]);
     }
 
     public function rules(): array
@@ -32,6 +37,8 @@ class ClientRequest extends FormRequest
             'email' => ['nullable', 'email', 'max:160'],
             'phone' => ['nullable', 'string', 'max:30'],
             'plan' => ['nullable', 'string', 'max:60'],
+            // Pasta do projeto Docker em /opt/clientes: só o nome, nunca um caminho
+            'project' => ['nullable', 'string', 'regex:'.BlockSync::PROJECT_PATTERN, Rule::unique('clients', 'project')->ignore($client?->id)],
             'notes' => ['nullable', 'string', 'max:2000'],
             'domains' => ['array', 'max:20'],
             'domains.*' => [
@@ -49,6 +56,8 @@ class ClientRequest extends FormRequest
         return [
             'domains.*.regex' => 'Domínio inválido: :input.',
             'domains.*.unique' => 'O domínio :input já pertence a outro cliente.',
+            'project.regex' => 'Use só letras minúsculas, números, hífen e sublinhado (o nome da pasta em /opt/clientes).',
+            'project.unique' => 'Este projeto já pertence a outro cliente.',
         ];
     }
 
@@ -59,6 +68,7 @@ class ClientRequest extends FormRequest
             'contact_name' => 'contato',
             'phone' => 'telefone',
             'plan' => 'plano',
+            'project' => 'projeto',
             'notes' => 'observações',
         ];
     }
