@@ -1,7 +1,10 @@
 <?php
 
+use App\Http\Controllers\Panel\ClientController;
+use App\Http\Controllers\Panel\SessionController;
 use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\SitemapController;
+use App\Http\Middleware\EnsureTwoFactorEnabled;
 use App\Support\BlogPosts;
 use App\Support\Seo;
 use Illuminate\Http\Request;
@@ -30,6 +33,29 @@ Route::get('/blog/{slug}', function (string $slug, BlogPosts $posts, Seo $seo) {
         ? response()->view('app', ['seo' => $seo->post($post)])
         : response()->view('app', ['seo' => $seo->notFound()], 404);
 })->where('slug', '[a-z0-9-]+')->name('blog.post');
+
+// Painel administrativo (login com senha Argon2id + TOTP via Fortify, em /painel/login e /painel/two-factor-challenge).
+// As telas são uma SPA à parte (resources/js/painel); o shell não traz dado nenhum, tudo passa pela API autenticada.
+Route::prefix('painel')->name('painel.')->group(function () {
+    Route::view('/', 'painel')->name('home');
+    Route::view('/login', 'painel')->name('login');
+    Route::view('/dois-fatores', 'painel')->name('two-factor');
+    Route::view('/clientes/{client}', 'painel')->whereNumber('client')->name('client');
+
+    Route::prefix('api')->middleware(['auth', 'throttle:painel'])->group(function () {
+        Route::get('/sessao', SessionController::class)->name('session');
+
+        Route::middleware(EnsureTwoFactorEnabled::class)->group(function () {
+            Route::get('/clientes', [ClientController::class, 'index'])->name('clients.index');
+            Route::post('/clientes', [ClientController::class, 'store'])->name('clients.store');
+            Route::get('/clientes/{client}', [ClientController::class, 'show'])->name('clients.show');
+            Route::put('/clientes/{client}', [ClientController::class, 'update'])->name('clients.update');
+            Route::patch('/clientes/{client}/status', [ClientController::class, 'status'])->name('clients.status');
+            Route::delete('/clientes/{client}', [ClientController::class, 'destroy'])->name('clients.destroy');
+            Route::get('/clientes/{client}/estatisticas', [ClientController::class, 'stats'])->name('clients.stats');
+        });
+    });
+});
 
 // Qualquer outro endereço: o React mostra a página "não encontrada", mas a resposta sai como 404
 // para buscadores e ferramentas não tratarem o endereço como página válida. Na API continua o 404 em JSON.
