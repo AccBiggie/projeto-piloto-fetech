@@ -88,8 +88,8 @@ Essas camadas seguram floods de aplicação (muitas requisições de poucos IPs)
 
 ### Ligar os logs do Caddy (uma vez, na VPS)
 
-1. **Wedding** (dono do container do Caddy): montar a pasta do host `/opt/caddy-logs` em `/var/log/caddy` no serviço do Caddy e publicar.
-2. Em **cada site** que deve aparecer no painel (o `fetech.caddy` e os arquivos dos clientes em `/opt/caddy-sites`), incluir no bloco do domínio:
+1. **Wedding** (dono do container do Caddy): usar o **Caddy 2.9 ou mais novo** e montar a pasta do host `/opt/caddy-logs` em `/var/log/caddy` no serviço do Caddy. Na 2.8 a opção `mode 0644` é aceita sem erro, mas ignorada: o log sai com permissão `0600` e o Fetech não consegue ler.
+2. O `fetech.caddy` já grava o log (o deploy o atualiza). Nos **sites dos clientes** em `/opt/caddy-sites`, o modelo `deploy/caddy/cliente.caddy.example` traz o mesmo bloco; em sites que ainda não o têm, incluir no bloco do domínio:
 
    ```caddy
    log {
@@ -103,7 +103,7 @@ Essas camadas seguram floods de aplicação (muitas requisições de poucos IPs)
    }
    ```
 
-   Todos os sites podem gravar no mesmo arquivo, com a mesma configuração. `roll_uncompressed` deixa o importador terminar o arquivo rotacionado, e `mode 0644` (Caddy 2.8 ou mais novo) deixa o container do Fetech ler o log. Depois, `docker exec wedding-caddy-1 caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile`.
+   Todos os sites podem gravar no mesmo arquivo, com a mesma configuração. `roll_uncompressed` deixa o importador terminar o arquivo rotacionado, e `mode 0644` deixa o container do Fetech ler o log. Depois, `docker exec wedding-caddy-1 caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile`.
 3. **`.env` do Fetech:** `CADDY_LOG_DIR=/opt/caddy-logs` e `CADDY_ACCESS_LOGS=/var/log/caddy/access.log` (modelo em `.env.production.example`). Para conferir: `docker compose -f docker-compose.prod.yml exec scheduler php artisan painel:importar-acessos`.
 
 ### Bloqueio de clientes
