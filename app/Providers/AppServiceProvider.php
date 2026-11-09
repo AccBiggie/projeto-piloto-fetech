@@ -58,6 +58,11 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(config('security.rate_limits.api'))->by($request->user()?->id ?: $request->ip());
         });
 
+        // API do painel: por administrador logado
+        RateLimiter::for('painel', function (Request $request) {
+            return Limit::perMinute(120)->by('painel:'.($request->user()?->id ?: $request->ip()));
+        });
+
         RateLimiter::for('contact', function (Request $request) {
             return [
                 Limit::perMinute(config('security.rate_limits.contact_per_minute'))->by('contact:minute:'.$request->ip()),
