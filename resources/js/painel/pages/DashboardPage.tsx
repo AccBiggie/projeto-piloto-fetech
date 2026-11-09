@@ -76,7 +76,7 @@ export default function DashboardPage() {
                             <StatCard label="clientes ativos" value={formatNumber(data.summary.active)} hint={`${data.summary.clients} no total`} />
                         </Grid>
                         <Grid size={{ xs: 6, md: 3 }}>
-                            <StatCard label="suspensos" value={formatNumber(data.summary.suspended)} />
+                            <StatCard label="bloqueados" value={formatNumber(data.summary.suspended)} />
                         </Grid>
                         <Grid size={{ xs: 6, md: 3 }}>
                             <StatCard label="requisições · 30 dias" value={formatNumber(overview.totals.requests)} change={trend(overview.totals.requests, overview.previous_requests)} />
@@ -115,7 +115,7 @@ export default function DashboardPage() {
                     <ToggleButtonGroup size="small" exclusive value={filter} onChange={(_, value: Filter | null) => value && setFilter(value)} aria-label="Filtrar por situação">
                         <ToggleButton value="all">Todos</ToggleButton>
                         <ToggleButton value="active">Ativos</ToggleButton>
-                        <ToggleButton value="suspended">Suspensos</ToggleButton>
+                        <ToggleButton value="suspended">Bloqueados</ToggleButton>
                     </ToggleButtonGroup>
                 </Stack>
 

@@ -50,6 +50,27 @@ export async function request<T = unknown>(path: string, options: { method?: str
 
 export type ClientStatus = 'active' | 'suspended';
 
+export type BlockReason = 'manual' | 'nonpayment';
+
+export const blockReasons: Record<BlockReason, string> = {
+    manual: 'Bloqueio manual',
+    nonpayment: 'Inadimplência',
+};
+
+/** Containers do projeto: rodando, parada agendada (stop_at), parando, parados ou religando depois do desbloqueio. */
+export interface Containers {
+    state: 'running' | 'scheduled' | 'stopping' | 'stopped' | 'starting';
+    stop_at: string | null;
+}
+
+export interface ClientEvent {
+    action: 'blocked' | 'unblocked';
+    reason: BlockReason | null;
+    note: string | null;
+    user: string | null;
+    created_at: string | null;
+}
+
 export interface Client {
     id: number;
     name: string;
@@ -57,11 +78,16 @@ export interface Client {
     email: string | null;
     phone: string | null;
     plan: string | null;
+    project: string | null;
     notes: string | null;
     status: ClientStatus;
     suspended_at: string | null;
+    block_reason: BlockReason | null;
+    block_note: string | null;
+    containers: Containers | null;
     domains: string[];
     created_at: string | null;
+    events?: ClientEvent[];
 }
 
 export interface ClientRow extends Client {
@@ -96,7 +122,7 @@ export interface Session {
     two_factor_confirmed: boolean;
 }
 
-export type ClientInput = Omit<Client, 'id' | 'status' | 'suspended_at' | 'created_at'>;
+export type ClientInput = Pick<Client, 'name' | 'contact_name' | 'email' | 'phone' | 'plan' | 'project' | 'notes' | 'domains'>;
 
 export const panelApi = {
     session: () => request<Session>('/painel/api/sessao'),
@@ -105,7 +131,8 @@ export const panelApi = {
     stats: (id: number, period: Period) => request<Series>(`/painel/api/clientes/${id}/estatisticas?period=${period}`),
     create: (input: ClientInput) => request<Client>('/painel/api/clientes', { method: 'POST', body: input }),
     update: (id: number, input: ClientInput) => request<Client>(`/painel/api/clientes/${id}`, { method: 'PUT', body: input }),
-    setStatus: (id: number, status: ClientStatus) => request<Client>(`/painel/api/clientes/${id}/status`, { method: 'PATCH', body: { status } }),
+    block: (id: number, reason: BlockReason, note: string) => request<Client>(`/painel/api/clientes/${id}/status`, { method: 'PATCH', body: { status: 'suspended', reason, note } }),
+    unblock: (id: number, note: string) => request<Client>(`/painel/api/clientes/${id}/status`, { method: 'PATCH', body: { status: 'active', note } }),
     remove: (id: number) => request<void>(`/painel/api/clientes/${id}`, { method: 'DELETE' }),
 };
 

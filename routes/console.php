@@ -10,3 +10,6 @@ Artisan::command('inspire', function () {
 
 // Estatísticas do painel: lê as linhas novas dos logs do Caddy a cada minuto
 Schedule::command('painel:importar-acessos')->everyMinute()->withoutOverlapping(10);
+
+// Bloqueio de clientes: domínios bloqueados no Caddy e containers a parar depois do prazo
+Schedule::command('painel:sincronizar-bloqueios')->everyMinute()->withoutOverlapping(10);

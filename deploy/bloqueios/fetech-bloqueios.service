@@ -1,0 +1,8 @@
+[Unit]
+Description=Fetech: para e religa os containers dos clientes bloqueados no painel
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/fetech-bloqueios

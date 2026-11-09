@@ -48,17 +48,20 @@ class ClientTest extends TestCase
             ->assertJsonValidationErrors('domains.0');
     }
 
-    public function test_suspends_and_reactivates_client(): void
+    public function test_blocks_and_unblocks_client(): void
     {
         $admin = $this->adminSaved();
         $client = Client::factory()->create();
 
         $this->actingAs($admin)->patchJson("/painel/api/clientes/{$client->id}/status", ['status' => 'suspended'])
-            ->assertOk()->assertJson(['status' => 'suspended']);
+            ->assertJsonValidationErrors('reason');
+
+        $this->actingAs($admin)->patchJson("/painel/api/clientes/{$client->id}/status", ['status' => 'suspended', 'reason' => 'manual'])
+            ->assertOk()->assertJson(['status' => 'suspended', 'block_reason' => 'manual']);
         $this->assertNotNull($client->fresh()->suspended_at);
 
         $this->actingAs($admin)->patchJson("/painel/api/clientes/{$client->id}/status", ['status' => 'active'])
-            ->assertOk()->assertJson(['status' => 'active', 'suspended_at' => null]);
+            ->assertOk()->assertJson(['status' => 'active', 'suspended_at' => null, 'block_reason' => null]);
 
         $this->actingAs($admin)->patchJson("/painel/api/clientes/{$client->id}/status", ['status' => 'qualquer'])
             ->assertUnprocessable();

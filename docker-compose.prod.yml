@@ -15,13 +15,17 @@ services:
     env_file: .env
     volumes:
       - storage:/var/www/html/storage
+      # Bloqueio de clientes: o painel grava os domínios bloqueados e lê os projetos parados pela VPS
+      - ${PAINEL_BLOQUEIOS_HOST_DIR:-/opt/caddy-bloqueios}/painel:/var/lib/painel/bloqueios
+      - ${PAINEL_BLOQUEIOS_HOST_DIR:-/opt/caddy-bloqueios}/parados:/var/lib/painel/parados:ro
     depends_on:
       db: { condition: service_healthy }
       redis: { condition: service_healthy }
     logging: *logging
 
   # Agendador do Laravel. A cada minuto soma no painel os acessos novos dos logs do Caddy
-  # (painel:importar-acessos). Mesma imagem do app; a pasta de logs do Caddy entra só leitura.
+  # (painel:importar-acessos) e aplica os bloqueios de clientes (painel:sincronizar-bloqueios).
+  # Mesma imagem do app; a pasta de logs do Caddy entra só leitura.
   scheduler:
     build: { context: ., target: production }
     restart: unless-stopped
@@ -30,6 +34,8 @@ services:
     volumes:
       - storage:/var/www/html/storage
       - ${CADDY_LOG_DIR:-/opt/caddy-logs}:/var/log/caddy:ro
+      - ${PAINEL_BLOQUEIOS_HOST_DIR:-/opt/caddy-bloqueios}/painel:/var/lib/painel/bloqueios
+      - ${PAINEL_BLOQUEIOS_HOST_DIR:-/opt/caddy-bloqueios}/parados:/var/lib/painel/parados:ro
     depends_on:
       db: { condition: service_healthy }
       redis: { condition: service_healthy }
