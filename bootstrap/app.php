@@ -16,6 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // Os contadores ficam no cache (Redis via CACHE_STORE), compartilhados entre todos os workers do PHP-FPM
         $middleware->throttleApi();
+        // Visitante sem login no painel vai para a tela de login; logado que abre o login vai para o painel
+        $middleware->redirectGuestsTo('/painel/login');
+        $middleware->redirectUsersTo('/painel');
         $middleware->web(append: [
             'throttle:web',
             SecurityHeaders::class,
