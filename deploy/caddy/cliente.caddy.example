@@ -8,6 +8,18 @@ cliente.com.br, www.cliente.com.br {
 	# Primeiro: página de suspensão quando o cliente está bloqueado no painel
 	import suspensao
 
+	# Log de acesso em JSON para as estatísticas do painel (painel:importar-acessos). Todos os sites gravam
+	# no mesmo arquivo com a mesma configuração; mode 0644 (Caddy 2.9+) deixa o container do Fetech ler.
+	log {
+		output file /var/log/caddy/access.log {
+			roll_size 50MiB
+			roll_keep 10
+			roll_uncompressed
+			mode 0644
+		}
+		format json
+	}
+
 	encode zstd gzip
 	reverse_proxy cliente-web:80
 }
