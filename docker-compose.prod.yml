@@ -20,6 +20,21 @@ services:
       redis: { condition: service_healthy }
     logging: *logging
 
+  # Agendador do Laravel. A cada minuto soma no painel os acessos novos dos logs do Caddy
+  # (painel:importar-acessos). Mesma imagem do app; a pasta de logs do Caddy entra só leitura.
+  scheduler:
+    build: { context: ., target: production }
+    restart: unless-stopped
+    env_file: .env
+    command: ["php", "artisan", "schedule:work"]
+    volumes:
+      - storage:/var/www/html/storage
+      - ${CADDY_LOG_DIR:-/opt/caddy-logs}:/var/log/caddy:ro
+    depends_on:
+      db: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    logging: *logging
+
   web:
     build: { context: ., target: web }
     restart: unless-stopped
