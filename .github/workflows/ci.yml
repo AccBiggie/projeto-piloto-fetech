@@ -57,6 +57,7 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 24, cache: npm }
       - run: npm ci
+      - run: node --test tests/Frontend/recaptcha.test.mjs
       # O build roda o typecheck (tsc --noEmit) antes do Vite
       - run: npm run build
 

@@ -97,6 +97,34 @@ class SpaTest extends TestCase
         $this->assertMatchesRegularExpression("/script-src 'self' 'nonce-[^']+'/", $csp);
     }
 
+    public function test_panel_csp_allows_recaptcha_without_unsafe_scripts(): void
+    {
+        foreach (['/painel', '/painel/login', '/painel/dois-fatores', '/painel/clientes/1'] as $path) {
+            $csp = $this->get($path)->assertOk()->headers->get('Content-Security-Policy');
+            preg_match('/(?:^|; )script-src ([^;]+)/', $csp, $scripts);
+
+            $this->assertStringContainsString('https://www.google.com/recaptcha/', $scripts[1]);
+            $this->assertStringContainsString('https://www.gstatic.com/recaptcha/', $scripts[1]);
+            $this->assertMatchesRegularExpression("/'nonce-[^']+'/", $scripts[1]);
+            $this->assertStringNotContainsString("'unsafe-inline'", $scripts[1]);
+            $this->assertStringNotContainsString("'unsafe-eval'", $scripts[1]);
+            $this->assertStringContainsString("frame-src 'self' https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/", $csp);
+            $this->assertStringContainsString("connect-src 'self' https://www.google.com/recaptcha/", $csp);
+            $this->assertStringContainsString("frame-ancestors 'none'", $csp);
+        }
+    }
+
+    public function test_public_csp_does_not_allow_recaptcha(): void
+    {
+        foreach (['/' => 200, '/blog' => 200, '/painel-publico' => 404] as $path => $status) {
+            $csp = $this->get($path)->assertStatus($status)->headers->get('Content-Security-Policy');
+
+            $this->assertStringNotContainsString('google.com', $csp);
+            $this->assertStringNotContainsString('gstatic.com', $csp);
+            $this->assertStringContainsString("default-src 'self'", $csp);
+        }
+    }
+
     public function test_web_routes_are_rate_limited_per_ip(): void
     {
         config(['security.rate_limits.web' => 3]);
