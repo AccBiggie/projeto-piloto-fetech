@@ -74,7 +74,7 @@ Essas camadas seguram floods de aplicação (muitas requisições de poucos IPs)
 
 Área administrativa em `/painel` para cadastrar os clientes da FETECH, ativar ou suspender cada um e acompanhar o uso do site de cada cliente: requisições por hora ou por dia (24 h, 7, 30 e 90 dias), respostas por status, dados enviados e tempo médio.
 
-- **Acesso:** e-mail e senha (hash **Argon2id**, `config/hashing.php`) seguidos do código de 6 dígitos de um app autenticador (TOTP, via Laravel Fortify), com códigos de recuperação. O 2FA é obrigatório: quem ainda não configurou é levado à tela do QR code e a API responde 403 até a confirmação. Login limitado a 5 tentativas por minuto por e-mail e IP (e 20 por IP); código TOTP, a 5 por minuto. Não há cadastro público nem redefinição de senha por e-mail.
+- **Acesso:** e-mail, senha (hash **Argon2id**, `config/hashing.php`) e reCAPTCHA, seguidos do código de 6 dígitos de um app autenticador (TOTP, via Laravel Fortify), com códigos de recuperação. O 2FA é obrigatório: quem ainda não configurou é levado à tela do QR code e a API responde 403 até a confirmação. Login limitado a 5 tentativas por minuto por e-mail e IP (e 20 por IP); código TOTP, a 5 por minuto. Não há cadastro público nem redefinição de senha por e-mail.
 - **Administradores:** criados pela linha de comando, que pede a senha (mínimo de 12 caracteres, com maiúsculas, minúsculas, números e símbolos):
 
   ```bash
@@ -85,6 +85,12 @@ Essas camadas seguram floods de aplicação (muitas requisições de poucos IPs)
 
 - **Estatísticas:** o serviço `scheduler` roda `php artisan painel:importar-acessos` a cada minuto. Ele lê só as linhas novas dos logs JSON do Caddy (guarda a posição de cada arquivo e termina o arquivo antigo quando o Caddy o rotaciona), soma as requisições por domínio e hora em `request_stats` e apaga o que passar de `PAINEL_RETENTION_DAYS`. Cada cliente vê os domínios cadastrados nele; acessos de domínios ainda não cadastrados ficam guardados e aparecem quando o domínio é cadastrado.
 - **Bloquear** (motivo *manual* ou *inadimplência*, com observação) tira o site do ar na hora: os domínios do cliente passam a mostrar uma página de suspensão (503). Se o bloqueio durar mais que `PAINEL_PARAR_APOS_DIAS` (7 por padrão), os containers do projeto do cliente também são parados; ao desbloquear, eles são religados e só então a página sai. Cada bloqueio e desbloqueio fica no histórico do cliente, com quem fez. Detalhes em "Bloqueio de clientes", abaixo.
+
+### reCAPTCHA do login
+
+Em produção, crie um **reCAPTCHA v2 — caixa de seleção “Não sou um robô”** no [console do Google](https://www.google.com/recaptcha/admin/create), cadastrando o domínio sem esquema ou caminho (ex.: `fetech.systems`). Preencha `RECAPTCHA_SITE_KEY` e `RECAPTCHA_SECRET_KEY` no `.env` do servidor **antes do deploy**. O deploy normal recria os serviços com as novas variáveis, e o entrypoint gera o cache de configuração. Para trocar somente as chaves em uma versão já publicada, execute `docker compose -f docker-compose.prod.yml up -d --force-recreate app scheduler`: apenas executar `config:cache` no container existente não atualiza as variáveis recebidas por `env_file`. A chave pública vai ao navegador; a secreta permanece no servidor. Chaves ausentes ou chaves públicas de teste bloqueiam o login em produção.
+
+Em `local`, `development` e `testing`, campos vazios usam as [chaves oficiais de teste](https://developers.google.com/recaptcha/docs/faq). Elas sempre aprovam e **não protegem contra bots**; não é necessário editar o `.env` local para testar. O widget é carregado apenas na tela de login do painel.
 
 ### Ligar os logs do Caddy (uma vez, na VPS)
 
@@ -141,7 +147,7 @@ O Fetech divide a VPS com o projeto wedding, mas tem usuário (`fetech`), pasta 
 
 1. **Wedding**: publicar em produção a versão em que o Caddy importa `/opt/caddy-sites` e entra na rede `proxy`.
 2. **VPS, como root**: `bash setup-vps.sh "<chave pública do CI>"` (o script está em `deploy/`). Ele cria o usuário `fetech`, a rede `proxy`, a pasta `/opt/caddy-sites` e clona o repositório em `/opt/fetech`.
-3. **VPS, como `fetech`**: criar `/opt/fetech/.env` a partir de `.env.production.example`. Preencha o domínio, a `APP_KEY`, as senhas do banco e o SMTP.
+3. **VPS, como `fetech`**: criar `/opt/fetech/.env` a partir de `.env.production.example`. Preencha o domínio, a `APP_KEY`, as senhas do banco, o SMTP e as chaves reais do reCAPTCHA v2.
 4. **DNS**: apontar para o IP da VPS (registros A/AAAA) **os dois** nomes, `fetech.systems` e `www.fetech.systems`. O canônico é o `www`: com `APP_DOMAIN=www.fetech.systems`, o deploy configura o Caddy para emitir o certificado dos dois e redirecionar (301) o endereço sem `www`, mantendo caminho e query. O `APP_URL` precisa ser exatamente `https://www.fetech.systems`, porque canonical, Open Graph, JSON-LD e sitemap saem dele.
 5. **GitHub > Settings > Secrets and variables > Actions**:
    - Secrets: `VPS_HOST`, `VPS_USER` (`fetech`), `VPS_SSH_KEY` (chave privada do CI), `VPS_KNOWN_HOSTS` (`ssh-keyscan -t ed25519 <host>`) e, se a porta não for 22, `VPS_PORT`.

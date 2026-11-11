@@ -138,8 +138,8 @@ export const panelApi = {
 
 // Rotas do Fortify (prefixo /painel)
 export const authApi = {
-    login: (email: string, password: string, remember: boolean) =>
-        request<{ two_factor?: boolean }>('/painel/login', { method: 'POST', body: { email, password, remember } }),
+    login: (email: string, password: string, remember: boolean, captchaToken: string) =>
+        request<{ two_factor?: boolean }>('/painel/login', { method: 'POST', body: { email, password, remember, 'g-recaptcha-response': captchaToken } }),
     challenge: (body: { code: string } | { recovery_code: string }) => request('/painel/two-factor-challenge', { method: 'POST', body }),
     logout: () => request('/painel/logout', { method: 'POST' }),
     passwordConfirmed: () => request<{ confirmed: boolean }>('/painel/user/confirmed-password-status'),

@@ -20,18 +20,27 @@ class SecurityHeaders
         $response = $next($request);
 
         if (str_contains((string) $response->headers->get('Content-Type'), 'text/html')) {
-            $response->headers->set('Content-Security-Policy', $this->policy());
+            $response->headers->set('Content-Security-Policy', $this->policy($request));
         }
 
         return $response;
     }
 
-    protected function policy(): string
+    protected function policy(Request $request): string
     {
         $nonce = Vite::cspNonce();
         $scripts = ["'self'", "'nonce-{$nonce}'"];
         $connect = ["'self'"];
         $fonts = ["'self'", 'data:'];
+        $frames = [];
+
+        // O reCAPTCHA é carregado pelo login do painel; o site público mantém a política restrita.
+        if ($request->is('painel', 'painel/*')) {
+            $scripts[] = 'https://www.google.com/recaptcha/';
+            $scripts[] = 'https://www.gstatic.com/recaptcha/';
+            $connect[] = 'https://www.google.com/recaptcha/';
+            $frames = ["'self'", 'https://www.google.com/recaptcha/', 'https://recaptcha.google.com/recaptcha/'];
+        }
 
         // Em desenvolvimento os scripts e as fontes vêm do servidor do Vite (HMR)
         if (Vite::isRunningHot()) {
@@ -42,7 +51,7 @@ class SecurityHeaders
             $connect[] = preg_replace('#^http#', 'ws', $hot);
         }
 
-        return implode('; ', [
+        $directives = [
             "default-src 'self'",
             'script-src '.implode(' ', $scripts),
             // O Emotion (MUI) injeta <style> em tempo de execução
@@ -54,6 +63,12 @@ class SecurityHeaders
             "base-uri 'self'",
             "form-action 'self'",
             "frame-ancestors 'none'",
-        ]);
+        ];
+
+        if ($frames !== []) {
+            $directives[] = 'frame-src '.implode(' ', $frames);
+        }
+
+        return implode('; ', $directives);
     }
 }

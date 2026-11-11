@@ -9,6 +9,7 @@ import { type FormEvent, useState } from 'react';
 
 import { ApiError, authApi } from '@/painel/api';
 import AuthShell from '@/painel/components/AuthShell';
+import Recaptcha from '@/painel/components/Recaptcha';
 
 type Step = 'credentials' | 'code';
 
@@ -22,13 +23,16 @@ export default function LoginPage({ onAuthenticated }: { onAuthenticated: () => 
     const [useRecovery, setUseRecovery] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [busy, setBusy] = useState(false);
+    const [captchaToken, setCaptchaToken] = useState('');
+    const [captchaReset, setCaptchaReset] = useState(0);
 
     async function submitCredentials(event: FormEvent) {
         event.preventDefault();
+        if (busy || !captchaToken) return;
         setBusy(true);
         setError(null);
         try {
-            const result = await authApi.login(email, password, remember);
+            const result = await authApi.login(email, password, remember, captchaToken);
             if (result?.two_factor) {
                 setStep('code');
                 setPassword('');
@@ -36,8 +40,10 @@ export default function LoginPage({ onAuthenticated }: { onAuthenticated: () => 
                 onAuthenticated();
             }
         } catch (e) {
-            setError(e instanceof ApiError ? (e.field('email') ?? e.message) : 'Não foi possível entrar. Tente de novo.');
+            setError(e instanceof ApiError ? (e.field('g-recaptcha-response') ?? e.field('email') ?? e.message) : 'Não foi possível entrar. Tente de novo.');
         } finally {
+            setCaptchaToken('');
+            setCaptchaReset((value) => value + 1);
             setBusy(false);
         }
     }
@@ -104,7 +110,8 @@ export default function LoginPage({ onAuthenticated }: { onAuthenticated: () => 
                 <TextField label="E-mail" type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="username" autoFocus required />
                 <TextField label="Senha" type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="current-password" required />
                 <FormControlLabel control={<Checkbox checked={remember} onChange={(event) => setRemember(event.target.checked)} />} label="Manter conectado neste dispositivo" />
-                <Button type="submit" variant="contained" size="large" disabled={busy || !email || !password}>
+                <Recaptcha onChange={setCaptchaToken} resetKey={captchaReset} />
+                <Button type="submit" variant="contained" size="large" disabled={busy || !email || !password || !captchaToken}>
                     Entrar
                 </Button>
             </Stack>

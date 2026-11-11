@@ -2,12 +2,14 @@
 
 namespace App\Providers;
 
+use App\Http\Requests\Panel\LoginRequest;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Fortify;
+use Laravel\Fortify\Http\Requests\LoginRequest as FortifyLoginRequest;
 
 /**
  * Login do painel administrativo (/painel): e-mail e senha (Argon2id) seguidos do código TOTP.
@@ -15,6 +17,11 @@ use Laravel\Fortify\Fortify;
  */
 class FortifyServiceProvider extends ServiceProvider
 {
+    public function register(): void
+    {
+        $this->app->bind(FortifyLoginRequest::class, LoginRequest::class);
+    }
+
     public function boot(): void
     {
         // Cinco tentativas por minuto para cada combinação de e-mail e IP, mais um teto por IP
