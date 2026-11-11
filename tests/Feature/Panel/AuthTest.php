@@ -5,6 +5,7 @@ namespace Tests\Feature\Panel;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Fortify\Actions\DisableTwoFactorAuthentication;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
@@ -50,6 +51,59 @@ class AuthTest extends TestCase
         $this->actingAs($user)->getJson('/painel/api/clientes')
             ->assertForbidden()
             ->assertJson(['code' => 'two_factor_required']);
+    }
+
+    public function test_local_two_factor_qr_code_identifies_homologation(): void
+    {
+        config(['app.name' => 'Fetech']);
+        $user = $this->adminSaved();
+
+        foreach (['local', 'development'] as $environment) {
+            $this->app->instance('env', $environment);
+
+            $this->assertTwoFactorQrCodeIssuer($user, 'fetechhomologação');
+            $this->assertSame('Fetech', config('app.name'));
+        }
+    }
+
+    public function test_production_two_factor_qr_code_keeps_application_name(): void
+    {
+        config(['app.name' => 'Fetech Produção']);
+        $this->app->instance('env', 'production');
+
+        $this->assertTwoFactorQrCodeIssuer($this->adminSaved(), 'Fetech Produção');
+    }
+
+    public function test_two_factor_qr_code_requires_login_and_recent_password_confirmation(): void
+    {
+        $this->getJson('/painel/user/two-factor-qr-code')->assertUnauthorized();
+
+        $this->actingAs($this->adminSaved())
+            ->getJson('/painel/user/two-factor-qr-code')->assertStatus(423);
+
+        $this->withSession(['auth.password_confirmed_at' => now()->subSeconds((int) config('auth.password_timeout') + 1)->timestamp])
+            ->getJson('/painel/user/two-factor-qr-code')->assertStatus(423);
+    }
+
+    public function test_two_factor_reset_keeps_password_and_requires_setup_again(): void
+    {
+        $user = $this->adminSaved(['email' => 'admin@fetech.systems', 'password' => 'Senha-Forte-123']);
+        $passwordHash = $user->password;
+
+        app(DisableTwoFactorAuthentication::class)($user);
+        $user->refresh();
+
+        $this->assertNull($user->two_factor_secret);
+        $this->assertNull($user->two_factor_recovery_codes);
+        $this->assertNull($user->two_factor_confirmed_at);
+        $this->assertSame($passwordHash, $user->password);
+
+        $this->postJson('/painel/login', ['email' => $user->email, 'password' => 'Senha-Forte-123'])
+            ->assertOk()->assertJson(['two_factor' => false]);
+        $this->assertAuthenticatedAs($user);
+
+        $this->getJson('/painel/api/sessao')->assertOk()->assertJson(['two_factor_confirmed' => false]);
+        $this->getJson('/painel/api/clientes')->assertForbidden()->assertJson(['code' => 'two_factor_required']);
     }
 
     public function test_login_with_two_factor_requires_the_totp_code(): void
@@ -110,5 +164,20 @@ class AuthTest extends TestCase
         $this->assertNotNull($user);
         $this->assertStringStartsWith('$argon2id$', $user->password);
         $this->assertFalse($user->hasConfirmedTwoFactor());
+    }
+
+    private function assertTwoFactorQrCodeIssuer(User $user, string $issuer): void
+    {
+        $response = $this->actingAs($user)
+            ->withSession(['auth.password_confirmed_at' => now()->timestamp])
+            ->getJson('/painel/user/two-factor-qr-code')
+            ->assertOk();
+
+        $url = $response->json('url');
+        parse_str(parse_url($url, PHP_URL_QUERY), $query);
+
+        $this->assertSame($issuer, $query['issuer']);
+        $this->assertSame('/'.$issuer.':'.$user->email, rawurldecode(parse_url($url, PHP_URL_PATH)));
+        $this->assertStringContainsString('<svg', $response->json('svg'));
     }
 }
