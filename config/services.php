@@ -1,5 +1,9 @@
 <?php
 
+use App\Support\Recaptcha;
+
+$recaptchaTestEnvironment = in_array(env('APP_ENV', 'production'), ['local', 'development', 'testing'], true);
+
 return [
 
     /*
@@ -20,6 +24,12 @@ return [
 
     'resend' => [
         'key' => env('RESEND_API_KEY'),
+    ],
+
+    'recaptcha' => [
+        // O par público de testes só é usado no desenvolvimento; produção exige chaves próprias.
+        'site_key' => trim((string) env('RECAPTCHA_SITE_KEY', '')) ?: ($recaptchaTestEnvironment ? Recaptcha::TEST_SITE_KEY : ''),
+        'secret_key' => trim((string) env('RECAPTCHA_SECRET_KEY', '')) ?: ($recaptchaTestEnvironment ? Recaptcha::TEST_SECRET_KEY : ''),
     ],
 
     'ses' => [

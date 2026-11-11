@@ -5,6 +5,7 @@ namespace Tests\Feature\Panel;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Laravel\Fortify\Actions\DisableTwoFactorAuthentication;
 use Tests\TestCase;
 
@@ -17,6 +18,14 @@ class AuthTest extends TestCase
         parent::setUp();
 
         $this->withoutVite();
+
+        config([
+            'app.url' => 'http://localhost',
+            'services.recaptcha.site_key' => 'test-site-key',
+            'services.recaptcha.secret_key' => 'test-secret-key',
+        ]);
+        Http::preventStrayRequests();
+        Http::fake(['https://www.google.com/recaptcha/api/siteverify' => Http::response(['success' => true, 'hostname' => 'localhost'])]);
     }
 
     public function test_panel_shell_is_not_indexed(): void
@@ -98,7 +107,7 @@ class AuthTest extends TestCase
         $this->assertNull($user->two_factor_confirmed_at);
         $this->assertSame($passwordHash, $user->password);
 
-        $this->postJson('/painel/login', ['email' => $user->email, 'password' => 'Senha-Forte-123'])
+        $this->postJson('/painel/login', ['email' => $user->email, 'password' => 'Senha-Forte-123', 'g-recaptcha-response' => 'test-captcha-token'])
             ->assertOk()->assertJson(['two_factor' => false]);
         $this->assertAuthenticatedAs($user);
 
@@ -110,7 +119,7 @@ class AuthTest extends TestCase
     {
         $this->adminSaved(['email' => 'admin@fetech.systems', 'password' => 'Senha-Forte-123']);
 
-        $this->postJson('/painel/login', ['email' => 'admin@fetech.systems', 'password' => 'Senha-Forte-123'])
+        $this->postJson('/painel/login', ['email' => 'admin@fetech.systems', 'password' => 'Senha-Forte-123', 'g-recaptcha-response' => 'test-captcha-token'])
             ->assertOk()
             ->assertJson(['two_factor' => true]);
         $this->assertGuest();
@@ -127,7 +136,7 @@ class AuthTest extends TestCase
     {
         $this->adminSaved(['email' => 'admin@fetech.systems', 'password' => 'Senha-Forte-123']);
 
-        $this->postJson('/painel/login', ['email' => 'admin@fetech.systems', 'password' => 'Senha-Forte-123']);
+        $this->postJson('/painel/login', ['email' => 'admin@fetech.systems', 'password' => 'Senha-Forte-123', 'g-recaptcha-response' => 'test-captcha-token']);
         $this->postJson('/painel/two-factor-challenge', ['recovery_code' => 'recovery-code-1'])->assertNoContent();
         $this->assertAuthenticated();
     }
@@ -137,9 +146,9 @@ class AuthTest extends TestCase
         $this->adminSaved(['email' => 'admin@fetech.systems', 'password' => 'Senha-Forte-123']);
 
         for ($i = 0; $i < 5; $i++) {
-            $this->postJson('/painel/login', ['email' => 'admin@fetech.systems', 'password' => 'errada'])->assertUnprocessable();
+            $this->postJson('/painel/login', ['email' => 'admin@fetech.systems', 'password' => 'errada', 'g-recaptcha-response' => 'test-captcha-token'])->assertUnprocessable();
         }
-        $this->postJson('/painel/login', ['email' => 'admin@fetech.systems', 'password' => 'Senha-Forte-123'])->assertTooManyRequests();
+        $this->postJson('/painel/login', ['email' => 'admin@fetech.systems', 'password' => 'Senha-Forte-123', 'g-recaptcha-response' => 'test-captcha-token'])->assertTooManyRequests();
         $this->assertGuest();
     }
 
