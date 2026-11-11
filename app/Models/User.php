@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Fortify\Contracts\TwoFactorAuthenticationProvider;
+use Laravel\Fortify\Fortify;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
 #[Fillable(['name', 'email', 'password'])]
@@ -30,6 +32,18 @@ class User extends Authenticatable
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
         ];
+    }
+
+    /** Identifica o autenticador local sem sobrescrever a conta de produção. */
+    public function twoFactorQrCodeUrl(): string
+    {
+        $issuer = app()->environment('local', 'development') ? 'fetechhomologação' : config('app.name');
+
+        return app(TwoFactorAuthenticationProvider::class)->qrCodeUrl(
+            $issuer,
+            $this->{Fortify::username()},
+            Fortify::currentEncrypter()->decrypt($this->two_factor_secret)
+        );
     }
 
     /** O 2FA só vale depois de confirmado com um código do app autenticador. */
