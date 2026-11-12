@@ -84,6 +84,23 @@ class BlockingTest extends TestCase
         $this->assertSame([], array_values(array_diff(scandir("{$this->dir}/hosts"), ['.', '..'])));
     }
 
+    public function test_cancelling_takes_the_site_down_and_stops_containers_after_the_deadline(): void
+    {
+        $client = $this->client();
+
+        $this->actingAs($this->adminSaved())
+            ->patchJson("/painel/api/clientes/{$client->id}/status", ['status' => 'cancelled'])
+            ->assertOk()
+            ->assertJson(['status' => 'cancelled', 'containers' => ['state' => 'scheduled']]);
+
+        $this->assertFileExists("{$this->dir}/hosts/padaria.com.br");
+        $this->assertSame('', $this->stopList());
+
+        $this->travel(8)->days();
+        $this->artisan('painel:sincronizar-bloqueios')->assertSuccessful();
+        $this->assertSame("padaria\n", $this->stopList());
+    }
+
     public function test_containers_are_listed_to_stop_after_the_deadline_for_any_reason(): void
     {
         $manual = $this->client('manual');

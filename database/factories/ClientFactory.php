@@ -14,6 +14,7 @@ class ClientFactory extends Factory
     {
         return [
             'name' => fake()->company(),
+            'legal_name' => fake()->company().' LTDA',
             'contact_name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'phone' => '(44) 99999-0000',
