@@ -2,16 +2,17 @@ import Box from '@mui/material/Box';
 import { Route, Routes, useLocation } from 'react-router';
 
 import BackHeader from '@/components/BackHeader';
-import CookieConsent from '@/components/CookieConsent';
 import FloatingActions from '@/components/FloatingActions';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
+import PrivacyNotice from '@/components/PrivacyNotice';
 import { useScrollRestoration } from '@/navigation';
 import BlogPage from '@/pages/BlogPage';
 import EmailPage from '@/pages/EmailPage';
 import HomePage from '@/pages/HomePage';
 import NotFoundPage from '@/pages/NotFoundPage';
 import PostPage from '@/pages/PostPage';
+import PrivacyPage from '@/pages/PrivacyPage';
 import QuotePage from '@/pages/QuotePage';
 import StorePage from '@/pages/StorePage';
 import SupportPage from '@/pages/SupportPage';
@@ -38,12 +39,13 @@ export default function App() {
                     <Route path="/loja-virtual" element={<StorePage />} />
                     <Route path="/email-profissional" element={<EmailPage />} />
                     <Route path="/suporte-ti" element={<SupportPage />} />
+                    <Route path="/privacidade" element={<PrivacyPage />} />
                     <Route path="*" element={<NotFoundPage />} />
                 </Routes>
             </Box>
             {!formPage && <Footer />}
             {!formPage && <FloatingActions />}
-            <CookieConsent />
+            <PrivacyNotice />
         </Box>
     );
 }
