@@ -12,6 +12,7 @@ import EmailPage from '@/pages/EmailPage';
 import HomePage from '@/pages/HomePage';
 import NotFoundPage from '@/pages/NotFoundPage';
 import PostPage from '@/pages/PostPage';
+import PrivacyPage from '@/pages/PrivacyPage';
 import QuotePage from '@/pages/QuotePage';
 import StorePage from '@/pages/StorePage';
 import SupportPage from '@/pages/SupportPage';
@@ -38,6 +39,7 @@ export default function App() {
                     <Route path="/loja-virtual" element={<StorePage />} />
                     <Route path="/email-profissional" element={<EmailPage />} />
                     <Route path="/suporte-ti" element={<SupportPage />} />
+                    <Route path="/privacidade" element={<PrivacyPage />} />
                     <Route path="*" element={<NotFoundPage />} />
                 </Routes>
             </Box>

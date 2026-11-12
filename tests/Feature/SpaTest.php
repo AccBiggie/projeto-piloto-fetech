@@ -69,13 +69,21 @@ class SpaTest extends TestCase
             ->assertSee('<div id="root"></div>', false);
     }
 
+    public function test_privacy_page_renders_react_shell(): void
+    {
+        $this->get('/privacidade')
+            ->assertOk()
+            ->assertSee('<div id="root"></div>', false)
+            ->assertSee('<title>Política de Privacidade – Fetech</title>', false);
+    }
+
     public function test_public_pages_do_not_set_cookies(): void
     {
         config(['seo.blog_posts' => base_path('tests/Fixtures/blog/posts.json')]);
 
         $paths = [
             '/', '/blog', '/blog/site-ou-loja-virtual', '/orcamento-site', '/criacao-de-sites', '/loja-virtual',
-            '/email-profissional', '/suporte-ti', '/pagina-que-nao-existe', '/sitemap.xml', '/robots.txt',
+            '/email-profissional', '/suporte-ti', '/privacidade', '/pagina-que-nao-existe', '/sitemap.xml', '/robots.txt',
             '/fetech/index',
         ];
 

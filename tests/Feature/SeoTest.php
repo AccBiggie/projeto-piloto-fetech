@@ -205,6 +205,7 @@ class SeoTest extends TestCase
             $this->assertContains(self::APP_URL.route($name, absolute: false), $locs);
         }
         $this->assertContains(self::APP_URL.'/blog', $locs);
+        $this->assertContains(self::APP_URL.'/privacidade', $locs);
         $this->assertContains(self::APP_URL.'/blog/site-ou-loja-virtual', $locs);
         $this->assertNotContains(self::APP_URL.'/orcamento-site', $locs);
         $this->assertStringContainsString('<lastmod>2026-10-20</lastmod>', $response->getContent());

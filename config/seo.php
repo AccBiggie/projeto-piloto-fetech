@@ -73,6 +73,11 @@ return [
             'title' => 'Orçamento – Fetech',
             'description' => 'Peça um orçamento de site, loja virtual ou sistema web em poucos passos: conte como é o seu projeto e a Fetech prepara a proposta com base nas respostas.',
         ],
+        'privacy' => [
+            'name' => 'Privacidade',
+            'title' => 'Política de Privacidade – Fetech',
+            'description' => 'Como a Fetech trata os dados de quem visita o site ou pede um orçamento: o que é coletado, para quê, por quanto tempo e como exercer seus direitos pela LGPD.',
+        ],
     ],
 
     // Endereço inexistente: não entra no índice e não tem canonical

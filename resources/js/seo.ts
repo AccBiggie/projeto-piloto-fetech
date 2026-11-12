@@ -4,7 +4,7 @@ import { useLocation } from 'react-router';
 // Meta das páginas na navegação sem recarregar. Os textos vêm do servidor (config/seo.php), que os
 // injeta em window.__SEO__ no app.blade.php: uma fonte só para o HTML inicial e para o React.
 
-export type PageName = 'home' | 'websites' | 'store' | 'email' | 'support' | 'blog' | 'quote';
+export type PageName = 'home' | 'websites' | 'store' | 'email' | 'support' | 'blog' | 'quote' | 'privacy';
 
 interface MetaText {
     title: string;

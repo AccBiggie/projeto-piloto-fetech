@@ -32,6 +32,7 @@ Route::withoutMiddleware($withoutCookies)->group(function () {
     Route::view('/loja-virtual', 'app')->name('store');
     Route::view('/email-profissional', 'app')->name('email');
     Route::view('/suporte-ti', 'app')->name('support');
+    Route::view('/privacidade', 'app')->name('privacy');
 
     // Post do blog com a meta dele; slug que não existe é 404, como qualquer endereço desconhecido
     Route::get('/blog/{slug}', function (string $slug, BlogPosts $posts, Seo $seo) {
