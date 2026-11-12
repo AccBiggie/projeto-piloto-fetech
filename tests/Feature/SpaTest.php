@@ -69,6 +69,31 @@ class SpaTest extends TestCase
             ->assertSee('<div id="root"></div>', false);
     }
 
+    public function test_public_pages_do_not_set_cookies(): void
+    {
+        config(['seo.blog_posts' => base_path('tests/Fixtures/blog/posts.json')]);
+
+        $paths = [
+            '/', '/blog', '/blog/site-ou-loja-virtual', '/orcamento-site', '/criacao-de-sites', '/loja-virtual',
+            '/email-profissional', '/suporte-ti', '/pagina-que-nao-existe', '/sitemap.xml', '/robots.txt',
+            '/fetech/index',
+        ];
+
+        foreach ($paths as $path) {
+            $cookies = $this->get($path)->headers->getCookies();
+
+            $this->assertSame([], $cookies, "{$path} gravou cookie: ".implode(', ', array_map(fn ($c) => $c->getName(), $cookies)));
+        }
+    }
+
+    public function test_panel_still_sets_session_and_csrf_cookies(): void
+    {
+        $response = $this->get('/painel/login')->assertOk();
+
+        $response->assertCookie(config('session.cookie'));
+        $response->assertCookie('XSRF-TOKEN');
+    }
+
     public function test_unknown_url_renders_react_shell_with_404_status(): void
     {
         $response = $this->get('/pagina-que-nao-existe')

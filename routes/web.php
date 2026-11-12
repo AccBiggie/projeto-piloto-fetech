@@ -7,32 +7,41 @@ use App\Http\Controllers\SitemapController;
 use App\Http\Middleware\EnsureTwoFactorEnabled;
 use App\Support\BlogPosts;
 use App\Support\Seo;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Http\Request;
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
 
-// Endereço antigo da home
-Route::permanentRedirect('/fetech/index', '/');
+// O site público não tem login nem formulário que use sessão (contato e orçamento vão pela /api), então não
+// grava cookie nenhum no visitante. Sessão e cookie XSRF-TOKEN ficam só no painel. Ver a página /privacidade.
+$withoutCookies = [StartSession::class, ShareErrorsFromSession::class, PreventRequestForgery::class];
 
-Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
-Route::get('/robots.txt', RobotsController::class)->name('robots');
+Route::withoutMiddleware($withoutCookies)->group(function () {
+    // Endereço antigo da home
+    Route::permanentRedirect('/fetech/index', '/');
 
-// Páginas do frontend React: o Blade só entrega o shell da SPA, com a meta de cada rota (config/seo.php)
-Route::view('/', 'app')->name('home');
-Route::view('/blog', 'app')->name('blog');
-Route::view('/orcamento-site', 'app')->name('quote');
-Route::view('/criacao-de-sites', 'app')->name('websites');
-Route::view('/loja-virtual', 'app')->name('store');
-Route::view('/email-profissional', 'app')->name('email');
-Route::view('/suporte-ti', 'app')->name('support');
+    Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
+    Route::get('/robots.txt', RobotsController::class)->name('robots');
 
-// Post do blog com a meta dele; slug que não existe é 404, como qualquer endereço desconhecido
-Route::get('/blog/{slug}', function (string $slug, BlogPosts $posts, Seo $seo) {
-    $post = $posts->find($slug);
+    // Páginas do frontend React: o Blade só entrega o shell da SPA, com a meta de cada rota (config/seo.php)
+    Route::view('/', 'app')->name('home');
+    Route::view('/blog', 'app')->name('blog');
+    Route::view('/orcamento-site', 'app')->name('quote');
+    Route::view('/criacao-de-sites', 'app')->name('websites');
+    Route::view('/loja-virtual', 'app')->name('store');
+    Route::view('/email-profissional', 'app')->name('email');
+    Route::view('/suporte-ti', 'app')->name('support');
 
-    return $post
-        ? response()->view('app', ['seo' => $seo->post($post)])
-        : response()->view('app', ['seo' => $seo->notFound()], 404);
-})->where('slug', '[a-z0-9-]+')->name('blog.post');
+    // Post do blog com a meta dele; slug que não existe é 404, como qualquer endereço desconhecido
+    Route::get('/blog/{slug}', function (string $slug, BlogPosts $posts, Seo $seo) {
+        $post = $posts->find($slug);
+
+        return $post
+            ? response()->view('app', ['seo' => $seo->post($post)])
+            : response()->view('app', ['seo' => $seo->notFound()], 404);
+    })->where('slug', '[a-z0-9-]+')->name('blog.post');
+});
 
 // Painel administrativo (login com senha Argon2id + TOTP via Fortify, em /painel/login e /painel/two-factor-challenge).
 // As telas são uma SPA à parte (resources/js/painel); o shell não traz dado nenhum, tudo passa pela API autenticada.
@@ -63,4 +72,4 @@ Route::fallback(function (Request $request, Seo $seo) {
     abort_if($request->is('api/*'), 404);
 
     return response()->view('app', ['seo' => $seo->notFound()], 404);
-});
+})->withoutMiddleware($withoutCookies);
