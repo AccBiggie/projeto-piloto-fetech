@@ -2,10 +2,10 @@ import Box from '@mui/material/Box';
 import { Route, Routes, useLocation } from 'react-router';
 
 import BackHeader from '@/components/BackHeader';
-import CookieConsent from '@/components/CookieConsent';
 import FloatingActions from '@/components/FloatingActions';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
+import PrivacyNotice from '@/components/PrivacyNotice';
 import { useScrollRestoration } from '@/navigation';
 import BlogPage from '@/pages/BlogPage';
 import EmailPage from '@/pages/EmailPage';
@@ -45,7 +45,7 @@ export default function App() {
             </Box>
             {!formPage && <Footer />}
             {!formPage && <FloatingActions />}
-            <CookieConsent />
+            <PrivacyNotice />
         </Box>
     );
 }
