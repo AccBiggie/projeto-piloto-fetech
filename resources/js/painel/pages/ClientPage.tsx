@@ -2,6 +2,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import DeleteIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import EditIcon from '@mui/icons-material/EditOutlined';
 import BlockIcon from '@mui/icons-material/Block';
+import CancelIcon from '@mui/icons-material/CancelOutlined';
 import UnlockIcon from '@mui/icons-material/LockOpenOutlined';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
@@ -25,7 +26,8 @@ import Typography from '@mui/material/Typography';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router';
 
-import { type BlockReason, type Client, type Containers, type Period, type Series, blockReasons, panelApi } from '@/painel/api';
+import { type BlockReason, type Client, type ClientEvent, type Containers, type Period, type Series, blockReasons, panelApi } from '@/painel/api';
+import CancelClientDialog from '@/painel/components/CancelClientDialog';
 import { RequestsChart, StatusChart } from '@/painel/components/charts';
 import ClientFormDialog from '@/painel/components/ClientFormDialog';
 import StatCard from '@/painel/components/StatCard';
@@ -49,6 +51,7 @@ export default function ClientPage() {
     const [error, setError] = useState<string | null>(null);
     const [editing, setEditing] = useState(false);
     const [confirm, setConfirm] = useState<'status' | 'delete' | null>(null);
+    const [cancelling, setCancelling] = useState(false);
     const [busy, setBusy] = useState(false);
     const [reason, setReason] = useState<BlockReason>('manual');
     const [note, setNote] = useState('');
@@ -86,7 +89,7 @@ export default function ClientPage() {
         setBusy(true);
         try {
             await panelApi.remove(client.id);
-            navigate('/');
+            navigate('/clientes');
         } catch (e) {
             setError((e as Error).message);
             setBusy(false);
@@ -97,6 +100,9 @@ export default function ClientPage() {
 
     const current = periods.find((item) => item.value === period)!;
     const suspending = client?.status === 'active';
+    const cancelled = client?.status === 'cancelled';
+    // Ativo: "Bloquear"; bloqueado: "Desbloquear"; cancelado: "Reativar" (mesma ação de voltar para ativo)
+    const statusLabel = suspending ? 'Bloquear' : cancelled ? 'Reativar' : 'Desbloquear';
 
     function openStatus() {
         setReason('manual');
@@ -106,7 +112,7 @@ export default function ClientPage() {
 
     return (
         <Stack spacing={3}>
-            <Button component={RouterLink} to="/" startIcon={<ArrowBackIcon />} sx={{ alignSelf: 'flex-start', paddingInline: 1 }}>
+            <Button component={RouterLink} to="/clientes" startIcon={<ArrowBackIcon />} sx={{ alignSelf: 'flex-start', paddingInline: 1 }}>
                 Clientes
             </Button>
 
@@ -120,6 +126,7 @@ export default function ClientPage() {
                                 </Typography>
                                 <StatusChip status={client.status} />
                             </Stack>
+                            {client.legal_name && <Typography sx={{ fontSize: 14, color: brand.ink }}>{client.legal_name}</Typography>}
                             <Typography sx={{ fontFamily: monoFont, fontSize: 14, color: brand.ink, wordBreak: 'break-all' }}>{client.domains.join(' · ') || 'sem domínio cadastrado'}</Typography>
                             <Typography sx={{ fontSize: 14, color: brand.ink, mt: 0.5 }}>
                                 {[client.plan, client.contact_name, client.email, client.phone].filter(Boolean).join(' · ')}
@@ -135,8 +142,13 @@ export default function ClientPage() {
                             Editar
                         </Button>
                         <Button variant="outlined" color={suspending ? 'error' : 'primary'} startIcon={suspending ? <BlockIcon /> : <UnlockIcon />} onClick={openStatus}>
-                            {suspending ? 'Bloquear' : 'Desbloquear'}
+                            {statusLabel}
                         </Button>
+                        {!cancelled && (
+                            <Button color="error" startIcon={<CancelIcon />} onClick={() => setCancelling(true)}>
+                                Cancelar contrato
+                            </Button>
+                        )}
                         <Button color="inherit" startIcon={<DeleteIcon />} onClick={() => setConfirm('delete')}>
                             Excluir
                         </Button>
@@ -149,6 +161,15 @@ export default function ClientPage() {
                     <Typography sx={{ fontWeight: 700, fontSize: 15 }}>
                         Site bloqueado{client.block_reason ? ` · ${blockReasons[client.block_reason]}` : ''}
                         {client.suspended_at ? ` desde ${formatDateTime(client.suspended_at)}` : ''}
+                    </Typography>
+                    {client.block_note && <Typography sx={{ fontSize: 14 }}>{client.block_note}</Typography>}
+                    <Typography sx={{ fontSize: 14, mt: 0.5 }}>Os visitantes veem a página de suspensão. {containersText(client.containers)}</Typography>
+                </Alert>
+            )}
+            {cancelled && client && (
+                <Alert severity="warning" variant="outlined">
+                    <Typography sx={{ fontWeight: 700, fontSize: 15 }}>
+                        Contrato cancelado{client.suspended_at ? ` desde ${formatDateTime(client.suspended_at)}` : ''}
                     </Typography>
                     {client.block_note && <Typography sx={{ fontSize: 14 }}>{client.block_note}</Typography>}
                     <Typography sx={{ fontSize: 14, mt: 0.5 }}>Os visitantes veem a página de suspensão. {containersText(client.containers)}</Typography>
@@ -223,13 +244,13 @@ export default function ClientPage() {
             {client?.events && client.events.length > 0 && (
                 <Paper elevation={0} sx={{ p: { xs: 2, md: 3 }, borderRadius: 3 }}>
                     <Typography component="h3" sx={{ fontWeight: 700, fontSize: 18, mb: 1.5 }}>
-                        Histórico de bloqueios
+                        Histórico da situação
                     </Typography>
                     <Stack component="ol" spacing={1.25} sx={{ listStyle: 'none', m: 0, p: 0 }}>
                         {client.events.map((event, index) => (
                             <Box component="li" key={index} sx={{ fontSize: 14 }}>
                                 <Typography component="span" sx={{ fontWeight: 600, fontSize: 14 }}>
-                                    {event.action === 'blocked' ? `Bloqueado · ${event.reason ? blockReasons[event.reason] : ''}` : 'Desbloqueado'}
+                                    {eventLabel(event)}
                                 </Typography>
                                 <Typography component="span" sx={{ fontSize: 13, color: brand.ink, ml: 1 }}>
                                     {[event.created_at && formatDateTime(event.created_at), event.user ?? 'sistema'].filter(Boolean).join(' · ')}
@@ -252,8 +273,17 @@ export default function ClientPage() {
                 }}
             />
 
+            <CancelClientDialog
+                client={cancelling ? client : null}
+                onClose={() => setCancelling(false)}
+                onCancelled={(saved) => {
+                    setClient(saved);
+                    setCancelling(false);
+                }}
+            />
+
             <Dialog open={confirm !== null} onClose={() => setConfirm(null)}>
-                <DialogTitle>{confirm === 'delete' ? 'Excluir cliente?' : suspending ? 'Bloquear o site do cliente?' : 'Desbloquear o site do cliente?'}</DialogTitle>
+                <DialogTitle>{confirm === 'delete' ? 'Excluir cliente?' : `${statusLabel} o site do cliente?`}</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
                         {confirm === 'delete'
@@ -278,12 +308,23 @@ export default function ClientPage() {
                 <DialogActions>
                     <Button onClick={() => setConfirm(null)}>Cancelar</Button>
                     <Button variant="contained" color={confirm === 'delete' || suspending ? 'error' : 'primary'} disabled={busy} onClick={confirm === 'delete' ? remove : toggleStatus}>
-                        {confirm === 'delete' ? 'Excluir' : suspending ? 'Bloquear' : 'Desbloquear'}
+                        {confirm === 'delete' ? 'Excluir' : statusLabel}
                     </Button>
                 </DialogActions>
             </Dialog>
         </Stack>
     );
+}
+
+const eventLabels: Record<ClientEvent['action'], string> = {
+    blocked: 'Bloqueado',
+    unblocked: 'Desbloqueado',
+    cancelled: 'Contrato cancelado',
+    reactivated: 'Reativado',
+};
+
+function eventLabel(event: ClientEvent): string {
+    return event.action === 'blocked' && event.reason ? `${eventLabels.blocked} · ${blockReasons[event.reason]}` : eventLabels[event.action];
 }
 
 function containersText(containers: Containers | null): string {

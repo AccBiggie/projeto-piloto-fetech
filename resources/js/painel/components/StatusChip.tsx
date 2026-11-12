@@ -1,12 +1,14 @@
 import Chip from '@mui/material/Chip';
 
-import type { ClientStatus } from '@/painel/api';
+import { type ClientStatus, clientStatuses } from '@/painel/api';
 import { brand } from '@/theme';
 
+const colors: Record<ClientStatus, { bgcolor: string; color: string }> = {
+    active: { bgcolor: 'rgba(130,173,176,.22)', color: '#1f5457' },
+    suspended: { bgcolor: 'rgba(224,20,59,.1)', color: brand.redText },
+    cancelled: { bgcolor: 'rgba(83,83,74,.12)', color: brand.ink },
+};
+
 export default function StatusChip({ status }: { status: ClientStatus }) {
-    return status === 'active' ? (
-        <Chip size="small" label="Ativo" sx={{ bgcolor: 'rgba(130,173,176,.22)', color: '#1f5457', fontWeight: 600 }} />
-    ) : (
-        <Chip size="small" label="Bloqueado" sx={{ bgcolor: 'rgba(224,20,59,.1)', color: brand.redText, fontWeight: 600 }} />
-    );
+    return <Chip size="small" label={clientStatuses[status]} sx={{ ...colors[status], fontWeight: 600 }} />;
 }

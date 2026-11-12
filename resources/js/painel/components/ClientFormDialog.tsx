@@ -17,7 +17,7 @@ import { type FormEvent, useEffect, useState } from 'react';
 import { ApiError, type Client, type ClientInput, panelApi } from '@/painel/api';
 import { theme } from '@/theme';
 
-const empty: ClientInput = { name: '', contact_name: '', email: '', phone: '', plan: '', project: '', notes: '', domains: [''] };
+const empty: ClientInput = { name: '', legal_name: '', contact_name: '', email: '', phone: '', plan: '', project: '', notes: '', domains: [''] };
 
 /** Cadastro e edição do cliente, com os domínios do site (os mesmos hosts que aparecem no log do Caddy). */
 export default function ClientFormDialog({ open, client, onClose, onSaved }: { open: boolean; client?: Client | null; onClose: () => void; onSaved: (client: Client) => void }) {
@@ -35,6 +35,7 @@ export default function ClientFormDialog({ open, client, onClose, onSaved }: { o
             client
                 ? {
                       name: client.name,
+                      legal_name: client.legal_name ?? '',
                       contact_name: client.contact_name ?? '',
                       email: client.email ?? '',
                       phone: client.phone ?? '',
@@ -84,8 +85,11 @@ export default function ClientFormDialog({ open, client, onClose, onSaved }: { o
                     </Alert>
                 )}
                 <Grid container spacing={2}>
-                    <Grid size={12}>
-                        <TextField label="Nome do cliente" value={form.name} onChange={set('name')} required fullWidth autoFocus error={!!fieldError('name')} helperText={fieldError('name')} />
+                    <Grid size={{ xs: 12, sm: 6 }}>
+                        <TextField label="Nome fantasia" value={form.name} onChange={set('name')} required fullWidth autoFocus error={!!fieldError('name')} helperText={fieldError('name')} />
+                    </Grid>
+                    <Grid size={{ xs: 12, sm: 6 }}>
+                        <TextField label="Razão social" value={form.legal_name ?? ''} onChange={set('legal_name')} fullWidth error={!!fieldError('legal_name')} helperText={fieldError('legal_name')} />
                     </Grid>
                     <Grid size={{ xs: 12, sm: 6 }}>
                         <TextField label="Contato" value={form.contact_name ?? ''} onChange={set('contact_name')} fullWidth error={!!fieldError('contact_name')} helperText={fieldError('contact_name')} />
@@ -97,7 +101,7 @@ export default function ClientFormDialog({ open, client, onClose, onSaved }: { o
                         <TextField label="E-mail" type="email" value={form.email ?? ''} onChange={set('email')} fullWidth error={!!fieldError('email')} helperText={fieldError('email')} />
                     </Grid>
                     <Grid size={{ xs: 12, sm: 6 }}>
-                        <TextField label="Plano" value={form.plan ?? ''} onChange={set('plan')} fullWidth placeholder="Ex.: Loja virtual" error={!!fieldError('plan')} helperText={fieldError('plan')} />
+                        <TextField label="Sistema" value={form.plan ?? ''} onChange={set('plan')} fullWidth placeholder="Ex.: Loja virtual" error={!!fieldError('plan')} helperText={fieldError('plan')} />
                     </Grid>
                     <Grid size={12}>
                         <TextField
