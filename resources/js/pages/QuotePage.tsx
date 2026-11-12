@@ -470,6 +470,13 @@ export default function QuotePage() {
                                     {last ? 'Enviar pedido' : 'Avançar'}
                                 </Button>
                             </Stack>
+
+                            <Typography variant="body2" sx={{ mt: 3, color: brand.ink, textAlign: 'center' }}>
+                                Usamos seus dados só para responder a este pedido.{' '}
+                                <Link component={RouterLink} to="/privacidade" target="_blank" sx={{ color: brand.redText }}>
+                                    Política de Privacidade
+                                </Link>
+                            </Typography>
                         </Box>
                     )}
                 </Box>

@@ -32,8 +32,8 @@ const menu = [...navItems.filter((item) => item.to !== '/'), cta];
 // (44) 99883-3731
 const whatsappLabel = whatsappNumber.replace(/^55(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
 
-const email = 'fetech.ferreira@gmail.com';
-const address = ['Rua Osvaldo Cruz, 317, apto 201', 'Maringá - PR', 'CEP 87020-200'];
+export const email = 'fetech.ferreira@gmail.com';
+export const address = ['Rua Osvaldo Cruz, 317', 'Maringá - PR', 'CEP 87020-200'];
 const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address.join(', '))}`;
 
 const columnTitleSx = { color: '#fff', fontSize: 18, textTransform: 'uppercase', mb: 1.5 } as const;
@@ -157,7 +157,10 @@ export default function Footer() {
                         sx={{ alignItems: { xs: 'center', lg: 'flex-end' }, justifyContent: 'space-between' }}
                     >
                         <Typography sx={{ color: brand.footerText, fontSize: 13, textAlign: { xs: 'center', lg: 'left' } }}>
-                            © {new Date().getFullYear()} Fetech Hardware & Technology. Todos os direitos reservados.
+                            © {new Date().getFullYear()} Fetech Hardware & Technology. Todos os direitos reservados.{' '}
+                            <Link component={RouterLink} to="/privacidade" sx={{ ...linkSx, fontSize: 13, textDecoration: 'underline' }}>
+                                Política de Privacidade
+                            </Link>
                         </Typography>
                         <Box
                             component={RouterLink}
