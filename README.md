@@ -101,7 +101,8 @@ Em `local`, `development` e `testing`, campos vazios usam as [chaves oficiais de
    log {
    	output file /var/log/caddy/access.log {
    		roll_size 50MiB
-   		roll_keep 10
+   		roll_keep 30
+   		roll_keep_for 4392h
    		roll_uncompressed
    		mode 0644
    	}
@@ -109,7 +110,7 @@ Em `local`, `development` e `testing`, campos vazios usam as [chaves oficiais de
    }
    ```
 
-   Todos os sites podem gravar no mesmo arquivo, com a mesma configuração. `roll_uncompressed` deixa o importador terminar o arquivo rotacionado, e `mode 0644` deixa o container do Fetech ler o log. Depois, `docker exec wedding-caddy-1 caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile`.
+   Todos os sites gravam no mesmo arquivo e precisam ter **exatamente este bloco**: o Caddy abre o arquivo uma vez só, com a configuração do primeiro site que carregar, e não avisa se as outras forem diferentes. `roll_keep_for 4392h` (183 dias) guarda os registros pelos 6 meses que o Marco Civil da Internet exige (Lei 12.965/2014, art. 15; prazo citado na `/privacidade`); sem ele, o Caddy apaga os arquivos rotacionados com 90 dias. `roll_keep 30` limita o espaço a 1,5 GB, o que cobre os 6 meses enquanto o tráfego de todos os sites somados ficar abaixo de ~8 MB de log por dia (`du -sh /opt/caddy-logs` mostra o uso). `roll_uncompressed` deixa o importador terminar o arquivo rotacionado, e `mode 0644` deixa o container do Fetech ler o log. Depois, `docker exec wedding-caddy-1 caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile`.
 3. **`.env` do Fetech:** `CADDY_LOG_DIR=/opt/caddy-logs` e `CADDY_ACCESS_LOGS=/var/log/caddy/access.log` (modelo em `.env.production.example`). Para conferir: `docker compose -f docker-compose.prod.yml exec scheduler php artisan painel:importar-acessos`.
 
 ### Bloqueio de clientes
