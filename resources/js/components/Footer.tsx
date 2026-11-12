@@ -33,7 +33,7 @@ const menu = [...navItems.filter((item) => item.to !== '/'), cta];
 const whatsappLabel = whatsappNumber.replace(/^55(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
 
 export const email = 'fetech.ferreira@gmail.com';
-export const address = ['Rua Osvaldo Cruz, 317, apto 201', 'Maringá - PR', 'CEP 87020-200'];
+export const address = ['Rua Osvaldo Cruz, 317', 'Maringá - PR', 'CEP 87020-200'];
 const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address.join(', '))}`;
 
 const columnTitleSx = { color: '#fff', fontSize: 18, textTransform: 'uppercase', mb: 1.5 } as const;
