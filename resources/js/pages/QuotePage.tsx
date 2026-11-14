@@ -17,6 +17,7 @@ import FormHelperText from '@mui/material/FormHelperText';
 import InputAdornment from '@mui/material/InputAdornment';
 import LinearProgress from '@mui/material/LinearProgress';
 import Link from '@mui/material/Link';
+import Slider from '@mui/material/Slider';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
@@ -42,11 +43,29 @@ const needs = [
     { id: 'emails', label: 'Preciso de e-mails personalizados.' },
 ];
 
-const steps = ['Contato', 'Serviços', 'Perfil', 'Referências'];
+const steps = ['Contato', 'Serviços', 'Perfil', 'Referências', 'Investimento'];
+
+// Faixa da estimativa de investimento, em reais. Mantenha igual a QuoteRequest::BUDGET_* no backend.
+const BUDGET_MIN = 500;
+const BUDGET_MAX = 50_000;
+const BUDGET_STEP = 500;
+
+const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
+const budgetText = (value: number) => brl.format(value) + (value >= BUDGET_MAX ? ' ou mais' : '');
 
 const email = 'fetech.ferreira@gmail.com';
 
-const emptyQuote: QuotePayload = { name: '', email: '', phone: '', services: [], needs: [], references: '', details: '', website: '' };
+const emptyQuote: QuotePayload = {
+    name: '',
+    email: '',
+    phone: '',
+    services: [],
+    needs: [],
+    references: '',
+    budget: BUDGET_MIN,
+    summary: '',
+    website: '',
+};
 
 // (44) 99883-3731 ou (44) 3333-4444, conforme os dígitos digitados
 function formatPhone(value: string) {
@@ -212,6 +231,7 @@ export default function QuotePage() {
             if (keys.some((key) => ['name', 'email', 'phone'].includes(key))) setStep(0);
             else if (keys.some((key) => key.startsWith('services'))) setStep(1);
             else if (keys.some((key) => key.startsWith('needs'))) setStep(2);
+            else if (keys.includes('references')) setStep(3);
         }
     }
 
@@ -403,33 +423,69 @@ export default function QuotePage() {
                                             Sites de referência
                                         </Typography>
                                         <Typography sx={{ color: brand.ink, mb: 4 }}>Conhece algum site parecido com o que você deseja?</Typography>
-                                        <Stack spacing={2.5}>
-                                            <TextField
-                                                label="Links dos sites"
-                                                placeholder="Cole aqui os links dos sites..."
-                                                name="references"
-                                                multiline
-                                                minRows={4}
-                                                fullWidth
-                                                value={quote.references}
-                                                onChange={(e) => update('references', e.target.value)}
-                                                error={Boolean(errors?.references)}
-                                                helperText={errors?.references?.[0]}
-                                                slotProps={{ htmlInput: { maxLength: 2000 } }}
-                                            />
-                                            <TextField
-                                                label="Quer contar mais sobre o projeto? (opcional)"
-                                                name="details"
-                                                multiline
-                                                minRows={3}
-                                                fullWidth
-                                                value={quote.details}
-                                                onChange={(e) => update('details', e.target.value)}
-                                                error={Boolean(errors?.details)}
-                                                helperText={errors?.details?.[0]}
-                                                slotProps={{ htmlInput: { maxLength: 2000 } }}
-                                            />
-                                        </Stack>
+                                        <TextField
+                                            label="Links dos sites"
+                                            placeholder="Cole aqui os links dos sites..."
+                                            name="references"
+                                            multiline
+                                            minRows={4}
+                                            fullWidth
+                                            value={quote.references}
+                                            onChange={(e) => update('references', e.target.value)}
+                                            error={Boolean(errors?.references)}
+                                            helperText={errors?.references?.[0]}
+                                            slotProps={{ htmlInput: { maxLength: 2000 } }}
+                                        />
+                                    </>
+                                )}
+
+                                {step === 4 && (
+                                    <>
+                                        <Typography component="h2" ref={titleRef} tabIndex={-1} sx={titleSx}>
+                                            Estimativa de investimento
+                                        </Typography>
+                                        <Typography id="budget-label" sx={{ color: brand.ink, mb: 3 }}>
+                                            Até quanto você pretende investir?
+                                        </Typography>
+                                        <Slider
+                                            name="budget"
+                                            aria-labelledby="budget-label"
+                                            min={BUDGET_MIN}
+                                            max={BUDGET_MAX}
+                                            step={BUDGET_STEP}
+                                            shiftStep={BUDGET_STEP * 10}
+                                            value={quote.budget}
+                                            onChange={(_, value) => update('budget', value as number)}
+                                            getAriaValueText={budgetText}
+                                            sx={{ height: 10, mx: 1, width: 'calc(100% - 16px)', '& .MuiSlider-rail': { bgcolor: brand.section, opacity: 1 } }}
+                                        />
+                                        <Typography aria-hidden="true" sx={{ fontSize: { xs: 24, md: 28 }, color: brand.dark, mt: 1.5 }}>
+                                            {budgetText(quote.budget)}
+                                        </Typography>
+                                        {errors?.budget && (
+                                            <FormHelperText error sx={{ mt: 1 }}>
+                                                {errors.budget[0]}
+                                            </FormHelperText>
+                                        )}
+
+                                        <Typography component="h3" sx={{ ...titleSx, fontSize: { xs: 22, md: 28 }, mt: 6 }}>
+                                            Faça um resumo sobre o seu negócio
+                                        </Typography>
+                                        <Typography id="summary-label" sx={{ color: brand.ink, mb: 3 }}>
+                                            Nos ajude a entender o que você faz para que possamos elaborar a melhor abordagem.
+                                        </Typography>
+                                        <TextField
+                                            placeholder="Escreva aqui..."
+                                            name="summary"
+                                            multiline
+                                            minRows={8}
+                                            fullWidth
+                                            value={quote.summary}
+                                            onChange={(e) => update('summary', e.target.value)}
+                                            error={Boolean(errors?.summary)}
+                                            helperText={errors?.summary?.[0]}
+                                            slotProps={{ htmlInput: { maxLength: 2000, 'aria-labelledby': 'summary-label' } }}
+                                        />
                                     </>
                                 )}
                             </Box>
@@ -462,12 +518,21 @@ export default function QuotePage() {
                                 )}
                                 <Button
                                     type="submit"
-                                    variant={last ? 'contained' : 'outlined'}
+                                    variant="outlined"
                                     size="large"
                                     disabled={sending}
-                                    endIcon={sending ? <CircularProgress size={18} color="inherit" /> : last ? <SendIcon /> : <ArrowForwardIcon />}
+                                    endIcon={
+                                        sending ? (
+                                            <CircularProgress size={18} color="inherit" />
+                                        ) : last ? (
+                                            <SendIcon sx={{ transform: 'rotate(-30deg) translateY(-2px)' }} />
+                                        ) : (
+                                            <ArrowForwardIcon />
+                                        )
+                                    }
+                                    sx={last ? { px: 4, borderRadius: 1.5, textTransform: 'none', fontSize: 18 } : undefined}
                                 >
-                                    {last ? 'Enviar pedido' : 'Avançar'}
+                                    {last ? 'Enviar' : 'Avançar'}
                                 </Button>
                             </Stack>
 

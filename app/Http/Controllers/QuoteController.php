@@ -26,6 +26,9 @@ class QuoteController extends Controller
             ? implode("\n", array_map(fn ($id) => '- '.$labels[$id], $ids))
             : '- (nenhuma opção marcada)';
 
+        $money = fn (int $value) => 'R$ '.number_format($value, 0, ',', '.');
+        $budget = $data['budget'] ?? null;
+
         $body = implode("\n", [
             "Nome: {$data['name']}",
             "E-mail: {$data['email']}",
@@ -40,8 +43,14 @@ class QuoteController extends Controller
             'Sites de referência:',
             ($data['references'] ?? null) ?: '(não informado)',
             '',
-            'Mais sobre o projeto:',
-            ($data['details'] ?? null) ?: '(não informado)',
+            'Estimativa de investimento: '.match (true) {
+                $budget === null => 'não informada',
+                $budget >= QuoteRequest::BUDGET_MAX => $money($budget).' ou mais',
+                default => 'até '.$money($budget),
+            },
+            '',
+            'Resumo do negócio:',
+            ($data['summary'] ?? null) ?: '(não informado)',
         ]);
 
         Mail::raw($body, function (Message $mail) use ($data) {
