@@ -28,6 +28,11 @@ class QuoteRequest extends FormRequest
         'emails' => 'Preciso de e-mails personalizados',
     ];
 
+    // Faixa da estimativa de investimento, em reais. Mantenha igual a BUDGET_* em QuotePage.tsx.
+    public const BUDGET_MIN = 500;
+
+    public const BUDGET_MAX = 50000;
+
     /**
      * @return array<string, array<int, mixed>>
      */
@@ -42,7 +47,8 @@ class QuoteRequest extends FormRequest
             'needs' => ['nullable', 'array'],
             'needs.*' => ['string', 'distinct', Rule::in(array_keys(self::NEEDS))],
             'references' => ['nullable', 'string', 'max:2000'],
-            'details' => ['nullable', 'string', 'max:2000'],
+            'budget' => ['nullable', 'integer', 'between:'.self::BUDGET_MIN.','.self::BUDGET_MAX],
+            'summary' => ['nullable', 'string', 'max:2000'],
             // Honeypot: campo invisível no formulário, só bots preenchem
             'website' => ['nullable', 'string', 'max:255'],
         ];
@@ -60,7 +66,8 @@ class QuoteRequest extends FormRequest
             'services' => 'serviços',
             'needs' => 'perfil',
             'references' => 'sites de referência',
-            'details' => 'detalhes do projeto',
+            'budget' => 'estimativa de investimento',
+            'summary' => 'resumo do negócio',
         ];
     }
 
@@ -73,6 +80,12 @@ class QuoteRequest extends FormRequest
             'required' => 'O campo :attribute é obrigatório.',
             'email' => 'Informe um :attribute válido.',
             'max' => 'O campo :attribute deve ter no máximo :max caracteres.',
+            'budget.integer' => 'Informe um valor válido.',
+            'budget.between' => sprintf(
+                'Escolha um valor entre R$ %s e R$ %s.',
+                number_format(self::BUDGET_MIN, 0, ',', '.'),
+                number_format(self::BUDGET_MAX, 0, ',', '.'),
+            ),
             'phone.regex' => 'Informe um telefone válido.',
             'services.required' => 'Escolha pelo menos um serviço.',
             'services.min' => 'Escolha pelo menos um serviço.',
