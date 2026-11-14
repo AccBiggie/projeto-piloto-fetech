@@ -14,7 +14,8 @@ class QuoteTest extends TestCase
         'services' => ['loja-virtual', 'email-profissional'],
         'needs' => ['vender-online', 'sem-dominio'],
         'references' => 'https://exemplo.com.br',
-        'details' => 'Loja de roupas com cerca de 200 produtos.',
+        'budget' => 5000,
+        'summary' => 'Loja de roupas com cerca de 200 produtos.',
     ];
 
     /**
@@ -48,6 +49,26 @@ class QuoteTest extends TestCase
         $this->assertStringContainsString('- E-mail Profissional', $body);
         $this->assertStringContainsString('- Quero vender pela internet', $body);
         $this->assertStringContainsString('https://exemplo.com.br', $body);
+        $this->assertStringContainsString('Estimativa de investimento: até R$ 5.000', $body);
+        $this->assertStringContainsString('Loja de roupas com cerca de 200 produtos.', $body);
+    }
+
+    public function test_budget_at_maximum_reads_as_or_more(): void
+    {
+        $this->postJson('/api/orcamento-site', [...$this->payload, 'budget' => 50000])->assertAccepted();
+
+        $this->assertStringContainsString('Estimativa de investimento: R$ 50.000 ou mais', $this->sentMessages()[0]->getTextBody());
+    }
+
+    public function test_rejects_budget_outside_range(): void
+    {
+        $this->postJson('/api/orcamento-site', [...$this->payload, 'budget' => 100])
+            ->assertUnprocessable()
+            ->assertJsonPath('errors.budget.0', 'Escolha um valor entre R$ 500 e R$ 50.000.');
+
+        $this->postJson('/api/orcamento-site', [...$this->payload, 'budget' => 60000])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['budget']);
     }
 
     public function test_only_contact_and_services_are_required(): void
@@ -61,6 +82,7 @@ class QuoteTest extends TestCase
         $body = $this->sentMessages()[0]->getTextBody();
         $this->assertStringContainsString('Telefone: não informado', $body);
         $this->assertStringContainsString('(nenhuma opção marcada)', $body);
+        $this->assertStringContainsString('Estimativa de investimento: não informada', $body);
     }
 
     public function test_validates_fields_in_portuguese(): void
