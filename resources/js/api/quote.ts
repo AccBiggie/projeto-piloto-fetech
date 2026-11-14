@@ -7,7 +7,8 @@ export type QuotePayload = {
     services: string[];
     needs: string[];
     references: string;
-    details: string;
+    budget: number;
+    summary: string;
     website: string;
 };
 
