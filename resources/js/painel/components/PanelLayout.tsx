@@ -1,7 +1,8 @@
 import CloseIcon from '@mui/icons-material/Close';
+import DashboardIcon from '@mui/icons-material/DashboardOutlined';
+import PeopleIcon from '@mui/icons-material/PeopleAltOutlined';
 import LogoutIcon from '@mui/icons-material/LogoutOutlined';
 import MenuIcon from '@mui/icons-material/Menu';
-import ReceiptIcon from '@mui/icons-material/ReceiptLongOutlined';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -15,7 +16,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { type ReactNode, useState } from 'react';
+import { type ReactNode, type ReactElement, useState } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router';
 
 import FetechLogo from '@/components/FetechLogo';
@@ -24,11 +25,30 @@ import { brand, monoFont, theme } from '@/theme';
 
 const sidebarWidth = 240;
 
+interface NavItem {
+    to: string;
+    label: string;
+    icon: ReactElement;
+    /** O item fica marcado nesta rota (as subpáginas contam: /clientes/12 marca Clientes). */
+    matches: (pathname: string) => boolean;
+}
+
+const navItems: NavItem[] = [
+    { to: '/', label: 'Painel de controle', icon: <DashboardIcon />, matches: (pathname) => pathname === '/' },
+    { to: '/clientes', label: 'Clientes', icon: <PeopleIcon />, matches: (pathname) => pathname === '/clientes' || pathname.startsWith('/clientes/') },
+];
+
+const navItemSx = {
+    borderRadius: 1,
+    '&:hover, &.Mui-selected, &.Mui-selected:hover': { bgcolor: brand.redDark },
+    '&.Mui-selected .MuiListItemText-primary': { fontWeight: 700 },
+    '&.Mui-focusVisible': { outline: '2px solid #fff', outlineOffset: 2 },
+} as const;
+
 export default function PanelLayout({ session, onLogout, children }: { session: Session; onLogout: () => void; children: ReactNode }) {
     const [menuOpen, setMenuOpen] = useState(false);
     const desktop = useMediaQuery(theme.breakpoints.up('md'));
     const { pathname } = useLocation();
-    const invoicesActive = pathname === '/' || pathname.startsWith('/clientes/');
 
     return (
         <Box sx={{ minHeight: '100vh', bgcolor: brand.section }}>
@@ -49,7 +69,7 @@ export default function PanelLayout({ session, onLogout, children }: { session: 
                     >
                         <MenuIcon />
                     </IconButton>
-                    <Box component={RouterLink} to="/" aria-label="Clientes" sx={{ color: '#fff', display: 'flex', alignItems: 'center', gap: 1.5, textDecoration: 'none' }}>
+                    <Box component={RouterLink} to="/" aria-label="Painel de controle" sx={{ color: '#fff', display: 'flex', alignItems: 'center', gap: 1.5, textDecoration: 'none' }}>
                         <FetechLogo sx={{ width: 120, height: 'auto', aspectRatio: '200 / 55' }} />
                         <Typography component="span" sx={{ fontFamily: monoFont, fontSize: 13, color: 'rgba(255,255,255,.7)', display: { xs: 'none', sm: 'inline' } }}>
                             / painel
@@ -90,25 +110,24 @@ export default function PanelLayout({ session, onLogout, children }: { session: 
                             </IconButton>
                         )}
                     </Toolbar>
-                    <List component="nav" id="panel-navigation" aria-label="Navegação do painel" sx={{ px: 2 }}>
-                        <ListItemButton
-                            component={RouterLink}
-                            to="/"
-                            selected={invoicesActive}
-                            aria-current={invoicesActive ? 'page' : undefined}
-                            onClick={() => setMenuOpen(false)}
-                            sx={{
-                                borderRadius: 1,
-                                '&:hover, &.Mui-selected, &.Mui-selected:hover': { bgcolor: brand.redDark },
-                                '&.Mui-selected .MuiListItemText-primary': { fontWeight: 700 },
-                                '&.Mui-focusVisible': { outline: '2px solid #fff', outlineOffset: 2 },
-                            }}
-                        >
-                            <ListItemIcon sx={{ minWidth: 36, color: 'inherit' }}>
-                                <ReceiptIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="Faturas" />
-                        </ListItemButton>
+                    <List component="nav" id="panel-navigation" aria-label="Navegação do painel" sx={{ px: 2, display: 'grid', gap: 0.5 }}>
+                        {navItems.map((item) => {
+                            const active = item.matches(pathname);
+                            return (
+                                <ListItemButton
+                                    key={item.to}
+                                    component={RouterLink}
+                                    to={item.to}
+                                    selected={active}
+                                    aria-current={active ? 'page' : undefined}
+                                    onClick={() => setMenuOpen(false)}
+                                    sx={navItemSx}
+                                >
+                                    <ListItemIcon sx={{ minWidth: 36, color: 'inherit' }}>{item.icon}</ListItemIcon>
+                                    <ListItemText primary={item.label} />
+                                </ListItemButton>
+                            );
+                        })}
                     </List>
                 </Drawer>
                 <Container component="main" maxWidth="lg" sx={{ minWidth: 0, py: { xs: 3, md: 5 } }}>

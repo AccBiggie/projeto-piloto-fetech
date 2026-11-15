@@ -74,6 +74,10 @@ Essas camadas seguram floods de aplicação (muitas requisições de poucos IPs)
 
 Área administrativa em `/painel` para cadastrar os clientes da FETECH, ativar ou suspender cada um e acompanhar o uso do site de cada cliente: requisições por hora ou por dia (24 h, 7, 30 e 90 dias), respostas por status, dados enviados e tempo médio.
 
+- **Painel de controle** (`/painel`): clientes por situação, requisições de todos os sites nos últimos 30 dias e os 5 clientes com mais acessos.
+- **Clientes** (`/painel/clientes`): cadastro e tabela paginada (10, 25, 50 ou 100 por página) com nome fantasia, razão social, sistema, telefone e situação. Busca por nome, razão social, contato, e-mail, telefone ou domínio, e filtro por situação (Ativo, Bloqueado, Cancelado). Os filtros ficam na URL. Cada linha tem as ações Editar, Gerar fatura (desativada até existir o controle de faturas) e Cancelar.
+- **Cancelar** encerra o contrato: o site sai do ar como no bloqueio (página de suspensão e, depois do prazo, containers parados), mas o cliente fica com a situação *Cancelado*, fora dos bloqueados. Na página do cliente, **Reativar** volta para *Ativo*; tudo fica no histórico.
+
 - **Acesso:** e-mail, senha (hash **Argon2id**, `config/hashing.php`) e reCAPTCHA, seguidos do código de 6 dígitos de um app autenticador (TOTP, via Laravel Fortify), com códigos de recuperação. O 2FA é obrigatório: quem ainda não configurou é levado à tela do QR code e a API responde 403 até a confirmação. Login limitado a 5 tentativas por minuto por e-mail e IP (e 20 por IP); código TOTP, a 5 por minuto. Não há cadastro público nem redefinição de senha por e-mail.
 - **Administradores:** criados pela linha de comando, que pede a senha (mínimo de 12 caracteres, com maiúsculas, minúsculas, números e símbolos):
 

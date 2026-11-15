@@ -1,55 +1,34 @@
-import AddIcon from '@mui/icons-material/Add';
-import SearchIcon from '@mui/icons-material/Search';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
-import InputAdornment from '@mui/material/InputAdornment';
 import Paper from '@mui/material/Paper';
 import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
-import TextField from '@mui/material/TextField';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router';
+import { useEffect, useState } from 'react';
+import { Link as RouterLink } from 'react-router';
 
-import { type ClientRow, panelApi } from '@/painel/api';
+import { type Dashboard, panelApi, type TopClient } from '@/painel/api';
 import { RequestsChart, Sparkline } from '@/painel/components/charts';
-import ClientFormDialog from '@/painel/components/ClientFormDialog';
+import PageHeader from '@/painel/components/PageHeader';
 import StatCard from '@/painel/components/StatCard';
 import StatusChip from '@/painel/components/StatusChip';
 import { formatNumber, trend } from '@/painel/format';
 import { brand, monoFont } from '@/theme';
 
-type Data = Awaited<ReturnType<typeof panelApi.clients>>;
-type Filter = 'all' | 'active' | 'suspended';
-
+/** Painel de controle: situação dos clientes, requisições de todos os sites e quem mais recebeu acessos. */
 export default function DashboardPage() {
-    const navigate = useNavigate();
-    const [data, setData] = useState<Data | null>(null);
+    const [data, setData] = useState<Dashboard | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const [search, setSearch] = useState('');
-    const [filter, setFilter] = useState<Filter>('all');
-    const [creating, setCreating] = useState(false);
 
-    const load = useCallback(() => {
+    useEffect(() => {
         panelApi
-            .clients()
+            .dashboard()
             .then(setData)
             .catch((e: Error) => setError(e.message));
     }, []);
-    useEffect(load, [load]);
-
-    const rows = useMemo(() => {
-        const term = search.trim().toLowerCase();
-        return (data?.clients ?? []).filter(
-            (client) =>
-                (filter === 'all' || client.status === filter) &&
-                (!term || client.name.toLowerCase().includes(term) || client.domains.some((domain) => domain.includes(term))),
-        );
-    }, [data, search, filter]);
 
     if (error) return <Alert severity="error">{error}</Alert>;
 
@@ -57,32 +36,27 @@ export default function DashboardPage() {
 
     return (
         <Stack spacing={3}>
-            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ justifyContent: 'space-between', alignItems: { sm: 'flex-end' } }}>
-                <Box>
-                    <Typography sx={{ fontFamily: monoFont, fontSize: 13, color: brand.redText }}>{'>'} clientes --listar</Typography>
-                    <Typography component="h1" sx={{ fontSize: { xs: 26, md: 32 }, fontWeight: 700 }}>
-                        Clientes
-                    </Typography>
-                </Box>
-                <Button variant="contained" startIcon={<AddIcon />} onClick={() => setCreating(true)}>
-                    Novo cliente
-                </Button>
-            </Stack>
+            <PageHeader command="painel --resumo" title="Painel de controle" />
 
             <Grid container spacing={2}>
                 {data && overview ? (
                     <>
                         <Grid size={{ xs: 6, md: 3 }}>
-                            <StatCard label="clientes ativos" value={formatNumber(data.summary.active)} hint={`${data.summary.clients} no total`} />
+                            <StatCard label="clientes ativos" value={formatNumber(data.summary.active)} hint={`${formatNumber(data.summary.clients)} no total`} />
                         </Grid>
                         <Grid size={{ xs: 6, md: 3 }}>
                             <StatCard label="bloqueados" value={formatNumber(data.summary.suspended)} />
                         </Grid>
                         <Grid size={{ xs: 6, md: 3 }}>
-                            <StatCard label="requisições · 30 dias" value={formatNumber(overview.totals.requests)} change={trend(overview.totals.requests, overview.previous_requests)} />
+                            <StatCard label="cancelados" value={formatNumber(data.summary.cancelled)} />
                         </Grid>
                         <Grid size={{ xs: 6, md: 3 }}>
-                            <StatCard label="erros 5xx · 30 dias" value={`${overview.totals.error_rate.toLocaleString('pt-BR')}%`} hint={`${formatNumber(overview.totals.status_5xx)} respostas`} />
+                            <StatCard
+                                label="requisições · 30 dias"
+                                value={formatNumber(overview.totals.requests)}
+                                change={trend(overview.totals.requests, overview.previous_requests)}
+                                hint={`${overview.totals.error_rate.toLocaleString('pt-BR')}% de erros 5xx`}
+                            />
                         </Grid>
                     </>
                 ) : (
@@ -103,54 +77,41 @@ export default function DashboardPage() {
             </Paper>
 
             <Paper elevation={0} sx={{ borderRadius: 3, overflow: 'hidden' }}>
-                <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ p: 2, alignItems: { md: 'center' } }}>
-                    <TextField
-                        size="small"
-                        placeholder="Buscar por nome ou domínio"
-                        value={search}
-                        onChange={(event) => setSearch(event.target.value)}
-                        sx={{ flex: 1, maxWidth: { md: 360 } }}
-                        slotProps={{ input: { startAdornment: <InputAdornment position="start"><SearchIcon fontSize="small" /></InputAdornment> }, htmlInput: { 'aria-label': 'Buscar clientes' } }}
-                    />
-                    <ToggleButtonGroup size="small" exclusive value={filter} onChange={(_, value: Filter | null) => value && setFilter(value)} aria-label="Filtrar por situação">
-                        <ToggleButton value="all">Todos</ToggleButton>
-                        <ToggleButton value="active">Ativos</ToggleButton>
-                        <ToggleButton value="suspended">Bloqueados</ToggleButton>
-                    </ToggleButtonGroup>
+                <Stack direction="row" spacing={2} sx={{ p: 2, justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Box>
+                        <Typography component="h2" sx={{ fontWeight: 700, fontSize: 18 }}>
+                            Clientes com mais acessos
+                        </Typography>
+                        <Typography sx={{ fontSize: 13, color: brand.ink }}>Últimos 30 dias completos</Typography>
+                    </Box>
+                    <Button component={RouterLink} to="/clientes" endIcon={<ArrowForwardIcon />}>
+                        Ver todos
+                    </Button>
                 </Stack>
 
                 {!data ? (
-                    <Stack spacing={1} sx={{ p: 2 }}>
+                    <Stack spacing={1} sx={{ p: 2, pt: 0 }}>
                         {[0, 1, 2].map((i) => (
                             <Skeleton key={i} variant="rounded" height={64} />
                         ))}
                     </Stack>
-                ) : rows.length === 0 ? (
-                    <Box sx={{ p: 5, textAlign: 'center', color: brand.ink }}>
-                        {data.clients.length === 0 ? 'Nenhum cliente cadastrado ainda.' : 'Nenhum cliente encontrado.'}
+                ) : data.top.length === 0 ? (
+                    <Box sx={{ p: 5, pt: 3, textAlign: 'center', color: brand.ink }}>
+                        {data.summary.clients === 0 ? 'Nenhum cliente cadastrado ainda.' : 'Nenhum acesso registrado nos últimos 30 dias.'}
                     </Box>
                 ) : (
-                    <Box component="ul" sx={{ listStyle: 'none', m: 0, p: 0 }}>
-                        {rows.map((client) => (
-                            <ClientItem key={client.id} client={client} />
+                    <Box component="ol" sx={{ listStyle: 'none', m: 0, p: 0 }}>
+                        {data.top.map((client) => (
+                            <TopClientItem key={client.id} client={client} />
                         ))}
                     </Box>
                 )}
             </Paper>
-
-            <ClientFormDialog
-                open={creating}
-                onClose={() => setCreating(false)}
-                onSaved={(client) => {
-                    setCreating(false);
-                    navigate(`/clientes/${client.id}`);
-                }}
-            />
         </Stack>
     );
 }
 
-function ClientItem({ client }: { client: ClientRow }) {
+function TopClientItem({ client }: { client: TopClient }) {
     return (
         <Box component="li" sx={{ borderTop: `1px solid ${brand.section}` }}>
             <Box

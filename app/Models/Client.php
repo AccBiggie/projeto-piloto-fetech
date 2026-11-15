@@ -7,12 +7,14 @@ use App\Enums\ClientStatus;
 use Carbon\CarbonInterface;
 use Database\Factories\ClientFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 
-#[Fillable(['name', 'contact_name', 'email', 'phone', 'plan', 'project', 'notes'])]
+#[Fillable(['name', 'legal_name', 'contact_name', 'email', 'phone', 'plan', 'project', 'notes'])]
 class Client extends Model
 {
     /** @use HasFactory<ClientFactory> */
@@ -43,9 +45,38 @@ class Client extends Model
         return $this->hasMany(ClientEvent::class)->latest('created_at')->latest('id');
     }
 
+    /**
+     * Busca por nome fantasia, razão social, contato, e-mail, telefone ou domínio. Os curingas do LIKE
+     * digitados (% e _) são buscados literalmente: "!" é o caractere de escape, aceito igual pelo MySQL e
+     * pelo SQLite dos testes (a barra invertida só é escape padrão no MySQL).
+     *
+     * @param  Builder<self>  $query
+     */
+    #[Scope]
+    protected function search(Builder $query, string $term): void
+    {
+        $like = '%'.str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $term).'%';
+        $matches = fn (Builder $query, string $column, string $boolean = 'or') => $query->whereRaw("{$column} like ? escape '!'", [$like], $boolean);
+
+        $query->where(function (Builder $query) use ($matches) {
+            foreach (['name', 'legal_name', 'contact_name', 'email', 'phone'] as $column) {
+                $matches($query, $column);
+            }
+            $query->orWhereHas('domains', fn (Builder $domains) => $matches($domains, 'host', 'and'));
+        });
+    }
+
+    /** @param  Builder<self>  $query */
+    #[Scope]
+    protected function withStatus(Builder $query, ClientStatus $status): void
+    {
+        $query->where('status', $status);
+    }
+
+    /** Site fora do ar: bloqueado ou com o contrato cancelado. */
     public function isBlocked(): bool
     {
-        return $this->status === ClientStatus::Suspended;
+        return $this->status->takesSiteDown();
     }
 
     /**
@@ -66,20 +97,44 @@ class Client extends Model
         });
     }
 
+    /**
+     * Encerra o contrato: o site sai do ar como no bloqueio (página de suspensão e, depois do prazo, containers
+     * parados), mas sem motivo de bloqueio. Cancelar um cliente bloqueado mantém o prazo do primeiro bloqueio.
+     */
+    public function cancel(?string $note = null, ?User $by = null): void
+    {
+        if ($this->status === ClientStatus::Cancelled) {
+            return;
+        }
+
+        DB::transaction(function () use ($note, $by) {
+            $this->status = ClientStatus::Cancelled;
+            $this->suspended_at ??= now();
+            $this->block_reason = null;
+            $this->block_note = $note;
+            $this->save();
+
+            $this->events()->create(['user_id' => $by?->id, 'action' => ClientEvent::CANCELLED, 'note' => $note]);
+        });
+    }
+
+    /** Volta o cliente para Ativo, vindo de um bloqueio (desbloqueio) ou de um cancelamento (reativação). */
     public function unblock(?string $note = null, ?User $by = null): void
     {
         if (! $this->isBlocked()) {
             return;
         }
 
-        DB::transaction(function () use ($note, $by) {
+        $action = $this->status === ClientStatus::Cancelled ? ClientEvent::REACTIVATED : ClientEvent::UNBLOCKED;
+
+        DB::transaction(function () use ($note, $by, $action) {
             $this->status = ClientStatus::Active;
             $this->suspended_at = null;
             $this->block_reason = null;
             $this->block_note = null;
             $this->save();
 
-            $this->events()->create(['user_id' => $by?->id, 'action' => ClientEvent::UNBLOCKED, 'note' => $note]);
+            $this->events()->create(['user_id' => $by?->id, 'action' => $action, 'note' => $note]);
         });
     }
 

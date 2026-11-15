@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Panel\ClientController;
+use App\Http\Controllers\Panel\DashboardController;
 use App\Http\Controllers\Panel\SessionController;
 use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\SitemapController;
@@ -50,12 +51,14 @@ Route::prefix('painel')->name('painel.')->group(function () {
     Route::view('/', 'painel')->name('home');
     Route::view('/login', 'painel')->name('login');
     Route::view('/dois-fatores', 'painel')->name('two-factor');
+    Route::view('/clientes', 'painel')->name('clients');
     Route::view('/clientes/{client}', 'painel')->whereNumber('client')->name('client');
 
     Route::prefix('api')->middleware(['auth', 'throttle:painel'])->group(function () {
         Route::get('/sessao', SessionController::class)->name('session');
 
         Route::middleware(EnsureTwoFactorEnabled::class)->group(function () {
+            Route::get('/resumo', DashboardController::class)->name('dashboard');
             Route::get('/clientes', [ClientController::class, 'index'])->name('clients.index');
             Route::post('/clientes', [ClientController::class, 'store'])->name('clients.store');
             Route::get('/clientes/{client}', [ClientController::class, 'show'])->name('clients.show');

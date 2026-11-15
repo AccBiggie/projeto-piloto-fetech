@@ -33,6 +33,7 @@ class ClientRequest extends FormRequest
 
         return [
             'name' => ['required', 'string', 'max:120'],
+            'legal_name' => ['nullable', 'string', 'max:160'],
             'contact_name' => ['nullable', 'string', 'max:120'],
             'email' => ['nullable', 'email', 'max:160'],
             'phone' => ['nullable', 'string', 'max:30'],
@@ -64,10 +65,11 @@ class ClientRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'name' => 'nome',
+            'name' => 'nome fantasia',
+            'legal_name' => 'razão social',
             'contact_name' => 'contato',
             'phone' => 'telefone',
-            'plan' => 'plano',
+            'plan' => 'sistema',
             'project' => 'projeto',
             'notes' => 'observações',
         ];

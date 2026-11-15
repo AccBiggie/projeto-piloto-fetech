@@ -6,6 +6,7 @@ import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router'
 import { authApi, panelApi, type Session } from '@/painel/api';
 import PanelLayout from '@/painel/components/PanelLayout';
 import ClientPage from '@/painel/pages/ClientPage';
+import ClientsPage from '@/painel/pages/ClientsPage';
 import DashboardPage from '@/painel/pages/DashboardPage';
 import LoginPage from '@/painel/pages/LoginPage';
 import TwoFactorSetupPage from '@/painel/pages/TwoFactorSetupPage';
@@ -75,6 +76,7 @@ export default function PanelApp() {
         <PanelLayout session={state.session} onLogout={logout}>
             <Routes>
                 <Route path="/" element={<DashboardPage />} />
+                <Route path="/clientes" element={<ClientsPage />} />
                 <Route path="/clientes/:id" element={<ClientPage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
