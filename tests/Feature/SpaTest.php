@@ -132,7 +132,7 @@ class SpaTest extends TestCase
 
     public function test_panel_csp_allows_recaptcha_without_unsafe_scripts(): void
     {
-        foreach (['/painel', '/painel/login', '/painel/dois-fatores', '/painel/clientes/1'] as $path) {
+        foreach (['/painel', '/painel/login', '/painel/dois-fatores', '/painel/clientes', '/painel/clientes/1'] as $path) {
             $csp = $this->get($path)->assertOk()->headers->get('Content-Security-Policy');
             preg_match('/(?:^|; )script-src ([^;]+)/', $csp, $scripts);
 

@@ -48,7 +48,14 @@ export async function request<T = unknown>(path: string, options: { method?: str
     return data as T;
 }
 
-export type ClientStatus = 'active' | 'suspended';
+export type ClientStatus = 'active' | 'suspended' | 'cancelled';
+
+/** Rótulos das situações, na ordem do filtro da listagem. */
+export const clientStatuses: Record<ClientStatus, string> = {
+    active: 'Ativo',
+    suspended: 'Bloqueado',
+    cancelled: 'Cancelado',
+};
 
 export type BlockReason = 'manual' | 'nonpayment';
 
@@ -64,7 +71,7 @@ export interface Containers {
 }
 
 export interface ClientEvent {
-    action: 'blocked' | 'unblocked';
+    action: 'blocked' | 'unblocked' | 'cancelled' | 'reactivated';
     reason: BlockReason | null;
     note: string | null;
     user: string | null;
@@ -73,7 +80,9 @@ export interface ClientEvent {
 
 export interface Client {
     id: number;
+    /** Nome fantasia */
     name: string;
+    legal_name: string | null;
     contact_name: string | null;
     email: string | null;
     phone: string | null;
@@ -90,9 +99,41 @@ export interface Client {
     events?: ClientEvent[];
 }
 
-export interface ClientRow extends Client {
+/** Cliente no ranking do painel de controle, com o uso dos últimos 30 dias. */
+export interface TopClient extends Pick<Client, 'id' | 'name' | 'status' | 'domains'> {
     requests_30d: number;
     spark: number[];
+}
+
+export interface Dashboard {
+    summary: Record<ClientStatus | 'clients', number>;
+    overview: Series;
+    top: TopClient[];
+}
+
+export interface Page<T> {
+    data: T[];
+    meta: { page: number; per_page: number; last_page: number; total: number };
+}
+
+/** Tamanhos de página aceitos pela API (ClientIndexRequest::PER_PAGE). */
+export const perPageOptions = [10, 25, 50, 100] as const;
+export type PerPage = (typeof perPageOptions)[number];
+
+export interface ClientQuery {
+    search?: string;
+    status?: ClientStatus | null;
+    page?: number;
+    perPage?: PerPage;
+}
+
+function queryString(params: Record<string, string | number | null | undefined>): string {
+    const query = new URLSearchParams();
+    for (const [key, value] of Object.entries(params)) {
+        if (value !== null && value !== undefined && value !== '') query.set(key, String(value));
+    }
+    const text = query.toString();
+    return text ? `?${text}` : '';
 }
 
 export interface Point {
@@ -122,16 +163,19 @@ export interface Session {
     two_factor_confirmed: boolean;
 }
 
-export type ClientInput = Pick<Client, 'name' | 'contact_name' | 'email' | 'phone' | 'plan' | 'project' | 'notes' | 'domains'>;
+export type ClientInput = Pick<Client, 'name' | 'legal_name' | 'contact_name' | 'email' | 'phone' | 'plan' | 'project' | 'notes' | 'domains'>;
 
 export const panelApi = {
     session: () => request<Session>('/painel/api/sessao'),
-    clients: () => request<{ clients: ClientRow[]; summary: { clients: number; active: number; suspended: number }; overview: Series }>('/painel/api/clientes'),
+    dashboard: () => request<Dashboard>('/painel/api/resumo'),
+    clients: ({ search, status, page, perPage }: ClientQuery = {}) =>
+        request<Page<Client>>(`/painel/api/clientes${queryString({ search: search?.trim(), status, page, per_page: perPage })}`),
     client: (id: number) => request<Client>(`/painel/api/clientes/${id}`),
     stats: (id: number, period: Period) => request<Series>(`/painel/api/clientes/${id}/estatisticas?period=${period}`),
     create: (input: ClientInput) => request<Client>('/painel/api/clientes', { method: 'POST', body: input }),
     update: (id: number, input: ClientInput) => request<Client>(`/painel/api/clientes/${id}`, { method: 'PUT', body: input }),
     block: (id: number, reason: BlockReason, note: string) => request<Client>(`/painel/api/clientes/${id}/status`, { method: 'PATCH', body: { status: 'suspended', reason, note } }),
+    cancel: (id: number, note: string) => request<Client>(`/painel/api/clientes/${id}/status`, { method: 'PATCH', body: { status: 'cancelled', note } }),
     unblock: (id: number, note: string) => request<Client>(`/painel/api/clientes/${id}/status`, { method: 'PATCH', body: { status: 'active', note } }),
     remove: (id: number) => request<void>(`/painel/api/clientes/${id}`, { method: 'DELETE' }),
 };

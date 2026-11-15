@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Panel;
 use App\Enums\BlockReason;
 use App\Enums\ClientStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Panel\ClientIndexRequest;
 use App\Http\Requests\Panel\ClientRequest;
 use App\Models\Client;
 use App\Models\ClientDomain;
 use App\Models\ClientEvent;
 use App\Support\Blocking\BlockSync;
 use App\Support\Stats\UsageStats;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -19,42 +21,30 @@ use Illuminate\Validation\Rule;
 
 class ClientController extends Controller
 {
-    private const SPARK_DAYS = 30;
-
     /** @var list<string>|null */
     private ?array $stopped = null;
 
     public function __construct(private BlockSync $blocks) {}
 
-    /** Lista de clientes com o uso dos últimos 30 dias e o resumo do topo do painel. */
-    public function index(UsageStats $stats): JsonResponse
+    /** Lista paginada de clientes, com busca e filtro por situação. */
+    public function index(ClientIndexRequest $request): JsonResponse
     {
-        $clients = Client::with('domains')->orderBy('name')->get();
-        $hosts = $clients->flatMap->hosts()->values()->all();
-        $daily = $stats->dailyByHost($hosts, self::SPARK_DAYS);
-
-        $rows = $clients->map(function (Client $client) use ($daily) {
-            $spark = array_fill(0, self::SPARK_DAYS, 0);
-            foreach ($client->hosts() as $host) {
-                foreach ($daily[$host] ?? [] as $i => $count) {
-                    $spark[$i] += $count;
-                }
-            }
-
-            return $this->present($client) + [
-                'requests_30d' => array_sum($spark),
-                'spark' => $spark,
-            ];
-        });
+        $page = Client::query()
+            ->with('domains')
+            ->when($request->search(), fn (Builder $query, string $term) => $query->search($term))
+            ->when($request->status(), fn (Builder $query, ClientStatus $status) => $query->withStatus($status))
+            ->orderBy('name')
+            ->orderBy('id')
+            ->paginate($request->perPage());
 
         return response()->json([
-            'clients' => $rows,
-            'summary' => [
-                'clients' => $clients->count(),
-                'active' => $clients->where('status', ClientStatus::Active)->count(),
-                'suspended' => $clients->where('status', ClientStatus::Suspended)->count(),
+            'data' => $page->getCollection()->map(fn (Client $client) => $this->present($client))->values(),
+            'meta' => [
+                'page' => $page->currentPage(),
+                'per_page' => $page->perPage(),
+                'last_page' => $page->lastPage(),
+                'total' => $page->total(),
             ],
-            'overview' => $stats->series($hosts, '30d'),
         ]);
     }
 
@@ -87,7 +77,7 @@ class ClientController extends Controller
         return response()->json($this->present($client->load('domains'), withEvents: true));
     }
 
-    /** Bloqueia (status "suspended", com motivo) ou desbloqueia ("active") o site do cliente. */
+    /** Bloqueia ("suspended", com motivo), cancela ("cancelled") ou volta para ativo ("active") o cliente. */
     public function status(Request $request, Client $client): JsonResponse
     {
         $data = $request->validate([
@@ -97,11 +87,11 @@ class ClientController extends Controller
         ], [], ['reason' => 'motivo', 'note' => 'observação']);
 
         $note = isset($data['note']) && trim($data['note']) !== '' ? trim($data['note']) : null;
-        if ($data['status'] === ClientStatus::Suspended->value) {
-            $client->block(BlockReason::from($data['reason']), $note, $request->user());
-        } else {
-            $client->unblock($note, $request->user());
-        }
+        match (ClientStatus::from($data['status'])) {
+            ClientStatus::Suspended => $client->block(BlockReason::from($data['reason']), $note, $request->user()),
+            ClientStatus::Cancelled => $client->cancel($note, $request->user()),
+            ClientStatus::Active => $client->unblock($note, $request->user()),
+        };
         $this->syncBlocks();
 
         return response()->json($this->present($client->load('domains'), withEvents: true));
@@ -173,6 +163,7 @@ class ClientController extends Controller
         $data = [
             'id' => $client->id,
             'name' => $client->name,
+            'legal_name' => $client->legal_name,
             'contact_name' => $client->contact_name,
             'email' => $client->email,
             'phone' => $client->phone,
